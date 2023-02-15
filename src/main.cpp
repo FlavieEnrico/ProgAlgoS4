@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <vector>
 #include "p6/p6.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
@@ -17,6 +18,30 @@ int main(int argc, char* argv[])
     // Actual app
     auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
     ctx.maximize_window();
+    std::vector<std::vector<float>> coord;
+    // double coord[400];
+    for (int i = 0; i < 100; i++)
+    {
+        std::vector<float> pos;
+        pos.push_back(p6::random::number(-1, 1));
+        pos.push_back(p6::random::number(-1, 1));
+        // coord[i]     = p6::random::number(-1, 1);
+        // coord[i + 1] = p6::random::number(-1, 1);
+
+        std::vector<float> depl;
+        depl.push_back(ceil(p6::random::number(-2, 1)));
+        depl.push_back(ceil(p6::random::number(-2, 1)));
+        // coord[i + 2] = ceil(p6::random::number(-2, 1));
+        // coord[i + 3] = ceil(p6::random::number(-2, 1));
+        while (depl[0] == 0 && depl[1] == 0)
+        {
+            depl[0] = ceil(p6::random::number(-2, 1));
+            depl[1] = ceil(p6::random::number(-2, 1));
+        }
+
+        coord.push_back(pos);
+        coord.push_back(depl);
+    }
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -25,6 +50,20 @@ int main(int argc, char* argv[])
             p6::Center{ctx.mouse()},
             p6::Radius{0.2f}
         );
+        for (int i = 0; i < 100; i++)
+        {
+            ctx.square(
+                p6::TopLeftCorner(coord[i][0], coord[i][1]),
+                p6::Radius{0.1f}
+            );
+        }
+        for (int i = 0; i < 100; i++)
+        {
+            coord[i][0] = coord[i][0] + 0.001 * coord[i + 1][0];
+            coord[i][1] = coord[i][1] + 0.001 * coord[i + 1][1];
+            // coord[i]=coord[i]+0.001*coord[i+2];
+            // coord[i + 1] = coord[i + 1] + 0.001 * coord[i + 3];
+        }
     };
 
     // Should be done last. It starts the infinite loop.
