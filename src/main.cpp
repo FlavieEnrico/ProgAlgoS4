@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::Blue);
+        ctx.background(p6::NamedColor::ChartreuseWeb);
         ctx.circle(
             p6::Center{ctx.mouse()},
             p6::Radius{0.2f}
@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
         }
         for (int i = 0; i < 100; i++)
         {
-            coord[i][0] = coord[i][0] + 0.001 * coord[i + 1][0];
-            coord[i][1] = coord[i][1] + 0.001 * coord[i + 1][1];
+            coord[i][0] = coord[i][0] + 0.001f * coord[i + 1][0];
+            coord[i][1] = coord[i][1] + 0.001f * coord[i + 1][1];
             // coord[i]=coord[i]+0.001*coord[i+2];
             // coord[i + 1] = coord[i + 1] + 0.001 * coord[i + 3];
         }
