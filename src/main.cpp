@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     }
 
     // Actual app
-    auto ctx = p6::Context{{.title = "Murmurations"}};
+    auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
     std::vector<std::vector<float>> coord;
 
@@ -52,10 +52,10 @@ int main(int argc, char* argv[])
             ctx.equilateral_triangle(
                 p6::Center(coord[i][0], coord[i][1]),
                 p6::Radius{0.1f},
-                p6::Rotation{p6::Radians{0}}
+                p6::Rotation{p6::Radians{0.f}}
             );
         }
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 2 * 100; i = i + 2)
         {
             coord[i][0] = coord[i][0] + 0.001f * coord[i + 1][0];
             coord[i][1] = coord[i][1] + 0.001f * coord[i + 1][1];

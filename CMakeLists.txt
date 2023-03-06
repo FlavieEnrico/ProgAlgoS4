@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 # ---Choose project name---
-project(Murmurations)
+project(ProgAlgoS4)
 
 # ---Declare source files---
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
