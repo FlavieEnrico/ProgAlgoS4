@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     }
 
     // Actual app
-    auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
+    auto ctx = p6::Context{{.title = "Murmurations"}};
     ctx.maximize_window();
     std::vector<std::vector<float>> coord;
 
