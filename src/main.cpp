@@ -43,10 +43,6 @@ int main(int argc, char* argv[])
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::ChartreuseWeb);
-        ctx.circle(
-            p6::Center{ctx.mouse()},
-            p6::Radius{0.2f}
-        );
         for (int i = 0; i < 100; i++)
         {
             ctx.equilateral_triangle(
