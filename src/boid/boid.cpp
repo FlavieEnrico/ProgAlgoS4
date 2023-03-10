@@ -10,24 +10,21 @@ Boid::Boid(glm::vec2 position, glm::vec2 direction, float radius, float speed)
 {
 }
 
-void Boid::draw(std::vector<Boid>& flock, p6::Context context)
+Boid::Boid(Boid& other_b)
+    : m_position(other_b.m_position), m_direction(other_b.m_direction), m_radius(other_b.m_radius), m_speed(other_b.m_speed)
 {
-    for (int i = 0; i < flock.size(); i++)
-    {
-        context.equilateral_triangle(
-            p6::Center(flock[i].m_position.x, flock[i].m_position.y),
-            p6::Radius{flock[i].m_radius},
-            p6::Rotation{flock[i].m_direction}
-        );
-    }
 }
 
-std::vector<Boid> Boid::update(std::vector<Boid>& flock)
+void Boid::draw(Boid my_boid, p6::Context& context)
 {
-    std::vector<Boid> updated_flock;
-    for (int i = 0; i < flock.size(); i++)
-    {
-        updated_flock[i].m_position = flock[i].m_position + flock[i].m_direction * flock[i].m_speed;
-    }
-    return updated_flock;
+    context.equilateral_triangle(
+        p6::Center(my_boid.m_position.x, my_boid.m_position.y),
+        p6::Radius{my_boid.m_radius},
+        p6::Rotation{my_boid.m_direction}
+    );
+}
+
+void Boid::update(Boid& my_boid)
+{
+    my_boid.m_position = my_boid.m_position + my_boid.m_direction * my_boid.m_speed;
 }

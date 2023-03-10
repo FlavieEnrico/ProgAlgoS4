@@ -13,8 +13,8 @@ private:
 
 public:
     Boid(glm::vec2 position, glm::vec2 direction, float radius, float speed);
-    Boid(Boid& other_b) = default;
-    ~Boid()             = default;
-    void              draw(std::vector<Boid>& flock, p6::Context context);
-    std::vector<Boid> update(std::vector<Boid>& flock);
+    Boid(Boid& other_b);
+    ~Boid() = default;
+    void static draw(Boid my_boid, p6::Context& context);
+    void static update(Boid& my_boid);
 };
