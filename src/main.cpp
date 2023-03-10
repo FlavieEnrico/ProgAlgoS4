@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <vector>
+#include "imgui.h"
 #include "p6/p6.h"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "boid/boid.hpp"
@@ -20,10 +21,11 @@ int main(int argc, char* argv[])
     auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
     std::vector<Boid> flock;
-    float             speed  = 0.001f;
-    float             radius = 0.1f;
+    float             speed        = 0.001f;
+    float             radius       = 0.1f;
+    int               number_boids = 100;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < number_boids; i++)
     {
         glm::vec2 position;
         position.x = p6::random::number(-1, 1);
@@ -39,17 +41,22 @@ int main(int argc, char* argv[])
             direction.y = p6::random::number(-1, 1);
         }
 
-        // Boid new_boid(position, direction, radius, speed);
         flock.emplace_back(position, direction, radius, speed);
     }
 
     // Declare your infinite update loop.
+    ctx.imgui = [&]() {
+        ImGui::Begin("Parameters");
+        ImGui::SliderInt("Number", &number_boids, 1, 150);
+        ImGui::End();
+        ImGui::ShowDemoWindow();
+    };
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::ChartreuseWeb);
-        for (int i = 0; i < flock.size(); i++)
+        for (auto& i : flock)
         {
-            Boid::update(flock[i]);
-            Boid::draw(flock[i], ctx);
+            Boid::update(i);
+            Boid::draw(i, ctx);
         }
     };
 

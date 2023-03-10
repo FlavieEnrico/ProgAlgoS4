@@ -10,12 +10,7 @@ Boid::Boid(glm::vec2 position, glm::vec2 direction, float radius, float speed)
 {
 }
 
-Boid::Boid(Boid& other_b)
-    : m_position(other_b.m_position), m_direction(other_b.m_direction), m_radius(other_b.m_radius), m_speed(other_b.m_speed)
-{
-}
-
-void Boid::draw(Boid my_boid, p6::Context& context)
+void Boid::draw(Boid& my_boid, p6::Context& context)
 {
     context.equilateral_triangle(
         p6::Center(my_boid.m_position.x, my_boid.m_position.y),
