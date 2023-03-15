@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
         flock.resize(number_boids);
         for (auto& i : flock)
         {
-            Boid::updatePosition(i);
+            i.update_position(i);
             Boid::draw(i, ctx);
         }
     };

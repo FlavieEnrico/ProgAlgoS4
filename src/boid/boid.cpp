@@ -37,7 +37,32 @@ void Boid::draw(Boid& my_boid, p6::Context& context)
     );
 }
 
-void Boid::updatePosition(Boid& my_boid)
+glm::vec2 Boid::separation(Boid& other_boid)
 {
-    my_boid.m_position = my_boid.m_position + my_boid.m_direction * my_boid.m_speed;
+    float     max_dist      = 0.5;
+    float     avoidVelocity = 0.05;
+    glm::vec2 difference(0., 0.);
+
+    if (&other_boid != this)
+    {
+        float current_dist = this->distance(other_boid);
+        if (current_dist < max_dist)
+        {
+            difference = this->m_position - other_boid.m_position;
+        }
+    }
+    this->m_direction += difference * avoidVelocity;
+    return m_direction;
+}
+
+float Boid::distance(const Boid& other_boid)
+{
+    return glm::length(this->m_position - other_boid.m_position);
+}
+
+void Boid::update_position(Boid& other_boid)
+{
+    // this->m_direction += this->separation(other_boid);
+
+    this->m_position = this->m_position + this->m_direction * this->m_speed;
 }

@@ -16,5 +16,7 @@ public:
     Boid();
     ~Boid() = default;
     void static draw(Boid& my_boid, p6::Context& context);
-    void static updatePosition(Boid& my_boid);
+    void      update_position(Boid& my_boid);
+    float     distance(const Boid& other_boid);
+    glm::vec2 separation(Boid& my_boid);
 };
