@@ -23,3 +23,22 @@ void Boid::update(Boid& my_boid)
 {
     my_boid.m_position = my_boid.m_position + my_boid.m_direction * my_boid.m_speed;
 }
+
+Boid Boid::create_new(float radius, float speed)
+{
+    glm::vec2 position;
+    position.x = p6::random::number(-1, 1);
+    position.y = p6::random::number(-1, 1);
+
+    glm::vec2 direction;
+    direction.x = p6::random::number(-1, 1);
+    direction.y = p6::random::number(-1, 1);
+
+    while (direction.x == 0 && direction.y == 0)
+    {
+        direction.x = p6::random::number(-1, 1);
+        direction.y = p6::random::number(-1, 1);
+    }
+
+    return Boid(position, direction, radius, speed);
+}

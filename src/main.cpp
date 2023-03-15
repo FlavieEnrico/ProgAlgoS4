@@ -27,21 +27,7 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i < number_boids; i++)
     {
-        glm::vec2 position;
-        position.x = p6::random::number(-1, 1);
-        position.y = p6::random::number(-1, 1);
-
-        glm::vec2 direction;
-        direction.x = p6::random::number(-1, 1);
-        direction.y = p6::random::number(-1, 1);
-
-        while (direction.x == 0 && direction.y == 0)
-        {
-            direction.x = p6::random::number(-1, 1);
-            direction.y = p6::random::number(-1, 1);
-        }
-
-        flock.emplace_back(position, direction, radius, speed);
+        flock.push_back(Boid::create_new(radius, speed));
     }
 
     // Declare your infinite update loop.
@@ -53,6 +39,18 @@ int main(int argc, char* argv[])
     };
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::ChartreuseWeb);
+        if (number_boids <= flock.size())
+        {
+            int less = flock.size() - number_boids;
+            for (int i = 0; i < less; i++)
+            {
+                flock.pop_back();
+            }
+        }
+        else
+        {
+            flock.push_back(Boid::create_new(radius, speed));
+        }
         for (auto& i : flock)
         {
             Boid::update(i);

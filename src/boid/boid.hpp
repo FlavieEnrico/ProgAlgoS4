@@ -16,4 +16,5 @@ public:
     ~Boid() = default;
     void static draw(Boid& my_boid, p6::Context& context);
     void static update(Boid& my_boid);
+    Boid static create_new(float radius, float speed);
 };
