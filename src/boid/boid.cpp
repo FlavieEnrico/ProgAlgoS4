@@ -79,6 +79,31 @@ float Boid::distance(const Boid& other_boid)
 
 void Boid::collision()
 {
+    float     wall_dist = 0.1f; // set the distance from the wall to start avoiding
+    glm::vec2 avoidance(0.f, 0.f);
+
+    if (this->m_position.x >= 1 - wall_dist)
+    {
+        avoidance.x = -1;
+    }
+    if (this->m_position.x <= -1 + wall_dist)
+    {
+        avoidance.x = 1;
+    }
+    if (this->m_position.y >= 1 - wall_dist)
+    {
+        avoidance.y = -1;
+    }
+    if (this->m_position.y <= -1 + wall_dist)
+    {
+        avoidance.y = 1;
+    }
+
+    if (avoidance != glm::vec2(0.f, 0.f))
+    {
+        this->m_direction += avoidance;
+    }
+
     if (this->m_position.x >= 1)
     {
         this->m_position.x = 1;
