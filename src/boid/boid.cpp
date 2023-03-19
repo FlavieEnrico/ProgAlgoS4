@@ -1,5 +1,6 @@
 #pragma once
 #include "boid.hpp"
+#include <cstdio>
 #include <vector>
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
@@ -37,22 +38,38 @@ void Boid::draw(Boid& my_boid, p6::Context& context)
     );
 }
 
-glm::vec2 Boid::separation(Boid& other_boid)
+glm::vec2 Boid::separation(std::vector<Boid>& flock)
 {
-    float     max_dist      = 0.5;
-    float     avoidVelocity = 0.05;
-    glm::vec2 difference(0., 0.);
+    float max_dist = m_radius * 2.0f;
 
-    if (&other_boid != this)
+    int       nb_near_boids = 0;
+    glm::vec2 difference(0.f, 0.f);
+    glm::vec2 steering(0.f, 0.f);
+
+    for (auto& other_boid : flock)
     {
-        float current_dist = this->distance(other_boid);
-        if (current_dist < max_dist)
+        if (this != &other_boid)
         {
-            difference = this->m_position - other_boid.m_position;
+            float current_dist = this->distance(other_boid);
+            if (current_dist < max_dist)
+            {
+                difference = this->m_position - other_boid.m_position;
+                // The difference is inversely proportional to the distance
+                difference /= current_dist;
+                steering += difference;
+                nb_near_boids++;
+            }
         }
     }
-    this->m_direction += difference * avoidVelocity;
-    return m_direction;
+    // if there are one or several boids around my_boid then change his behavior
+    if (nb_near_boids > 0)
+    {
+        // average the vector according to the number of near boids
+        steering /= nb_near_boids;
+    }
+    // steering = glm::normalize(steering);
+
+    return steering;
 }
 
 float Boid::distance(const Boid& other_boid)
@@ -60,9 +77,29 @@ float Boid::distance(const Boid& other_boid)
     return glm::length(this->m_position - other_boid.m_position);
 }
 
-void Boid::update_position(Boid& other_boid)
+void Boid::collision()
 {
-    // this->m_direction += this->separation(other_boid);
+    if (this->m_position.x >= 1)
+    {
+        this->m_position.x = 1;
+    }
+    if (this->m_position.x <= -1)
+    {
+        this->m_position.x = -1;
+    }
+    if (this->m_position.y >= 1)
+    {
+        this->m_position.y = 1;
+    }
+    if (this->m_position.y <= -1)
+    {
+        this->m_position.y = -1;
+    }
+}
 
+void Boid::update_position(std::vector<Boid>& flock)
+{
+    this->m_direction += this->separation(flock);
     this->m_position = this->m_position + this->m_direction * this->m_speed;
+    collision();
 }

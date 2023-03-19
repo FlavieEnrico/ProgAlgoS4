@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i < number_boids; i++)
     {
-        flock.push_back({});
+        flock.emplace_back();
     }
 
     // Declare your infinite update loop.
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
         flock.resize(number_boids);
         for (auto& i : flock)
         {
-            i.update_position(i);
+            i.update_position(flock);
             Boid::draw(i, ctx);
         }
     };

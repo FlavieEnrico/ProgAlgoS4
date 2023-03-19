@@ -16,7 +16,8 @@ public:
     Boid();
     ~Boid() = default;
     void static draw(Boid& my_boid, p6::Context& context);
-    void      update_position(Boid& my_boid);
+    void      update_position(std::vector<Boid>& flock);
     float     distance(const Boid& other_boid);
-    glm::vec2 separation(Boid& my_boid);
+    glm::vec2 separation(std::vector<Boid>& flock);
+    void      collision();
 };
