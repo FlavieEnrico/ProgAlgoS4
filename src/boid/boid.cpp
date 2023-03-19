@@ -38,6 +38,36 @@ void Boid::draw(Boid& my_boid, p6::Context& context)
     );
 }
 
+glm::vec2 Boid::cohesion(std::vector<Boid>& flock)
+{
+    float perception_radius = m_radius * 5.0f;
+    int   nb_near_boids     = 0;
+
+    glm::vec2 steering(0.f, 0.f);
+
+    for (auto& other_boid : flock)
+    {
+        if (this != &other_boid)
+        {
+            float current_dist = this->distance(other_boid);
+            if (current_dist < perception_radius)
+            {
+                steering += other_boid.m_position;
+                nb_near_boids++;
+            }
+        }
+    }
+    // if there are one or several boids around my_boid then change his behavior
+    if (nb_near_boids > 0)
+    {
+        // average the vector according to the number of near boids
+        steering /= nb_near_boids;
+        steering -= this->m_position;
+    }
+    // steering = glm::normalize(steering);
+    return steering;
+}
+
 glm::vec2 Boid::separation(std::vector<Boid>& flock)
 {
     float max_dist = m_radius * 2.0f;
@@ -124,6 +154,7 @@ void Boid::collision()
 
 void Boid::update_position(std::vector<Boid>& flock)
 {
+    this->m_direction += this->cohesion(flock);
     this->m_direction += this->separation(flock);
     this->m_position = this->m_position + this->m_direction * this->m_speed;
     collision();
