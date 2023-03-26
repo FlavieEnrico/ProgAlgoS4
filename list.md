@@ -12,10 +12,10 @@
     - [X] Destructeur 
     - [X] Affichage 
     - [ ] Update = update direction (avec les comportements) puis position=position+direction*vitesse
-    - [ ] Séparation
+    - [X] Séparation
     - [ ] Alignement
-    - [ ] Cohésion
-    - [ ] Avoid walls/respawn 
+    - [X] Cohésion
+    - [X] Avoid walls/respawn 
 - [ ] Dear ImGUI
 
 
