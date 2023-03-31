@@ -17,7 +17,6 @@ public:
     ~Boid() = default;
     void static draw(Boid& my_boid, p6::Context& context);
     void      update_position(std::vector<Boid>& flock);
-    float     distance(const Boid& other_boid);
     glm::vec2 separation(std::vector<Boid>& flock);
     glm::vec2 cohesion(std::vector<Boid>& flock);
     glm::vec2 alignment(std::vector<Boid>& flock);

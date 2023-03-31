@@ -16,23 +16,15 @@ Boid::Boid()
     m_position.x = p6::random::number(-1, 1);
     m_position.y = p6::random::number(-1, 1);
 
-    m_direction.x = p6::random::number(-1, 1);
-    m_direction.y = p6::random::number(-1, 1);
-
-    while (m_direction.x == 0 && m_direction.y == 0)
-    {
-        m_direction.x = p6::random::number(-1, 1);
-        m_direction.y = p6::random::number(-1, 1);
-    }
-
-    m_radius = 0.1f;
-    m_speed  = 0.001f;
+    m_radius    = 0.1f;
+    m_speed     = 0.001f;
+    m_direction = p6::random::direction();
 }
 
 void Boid::draw(Boid& my_boid, p6::Context& context)
 {
     context.equilateral_triangle(
-        p6::Center(my_boid.m_position.x, my_boid.m_position.y),
+        p6::Center(my_boid.m_position),
         p6::Radius{my_boid.m_radius},
         p6::Rotation{my_boid.m_direction}
     );
@@ -49,7 +41,7 @@ glm::vec2 Boid::alignment(std::vector<Boid>& flock)
     {
         if (this != &other_boid)
         {
-            float current_dist = this->distance(other_boid);
+            float current_dist = glm::distance(this->m_position, other_boid.m_position);
             if (current_dist < perception_radius)
             {
                 steering += other_boid.m_direction;
@@ -77,7 +69,7 @@ glm::vec2 Boid::cohesion(std::vector<Boid>& flock)
     {
         if (this != &other_boid)
         {
-            float current_dist = this->distance(other_boid);
+            float current_dist = glm::distance(this->m_position, other_boid.m_position);
             if (current_dist < perception_radius)
             {
                 steering += other_boid.m_position;
@@ -108,12 +100,15 @@ glm::vec2 Boid::separation(std::vector<Boid>& flock)
     {
         if (this != &other_boid)
         {
-            float current_dist = this->distance(other_boid);
+            float current_dist = glm::distance(this->m_position, other_boid.m_position);
             if (current_dist < max_dist)
             {
                 difference = this->m_position - other_boid.m_position;
                 // The difference is inversely proportional to the distance
-                difference /= current_dist;
+                if (current_dist != 0)
+                {
+                    difference /= current_dist;
+                }
                 steering += difference;
                 nb_near_boids++;
             }
@@ -128,11 +123,6 @@ glm::vec2 Boid::separation(std::vector<Boid>& flock)
     // steering = glm::normalize(steering);
 
     return steering;
-}
-
-float Boid::distance(const Boid& other_boid)
-{
-    return glm::length(this->m_position - other_boid.m_position);
 }
 
 void Boid::collision()

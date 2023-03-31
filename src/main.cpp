@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
     std::vector<Boid> flock;
-    int               number_boids = 100;
+    int               number_boids = 10;
 
     for (int i = 0; i < number_boids; i++)
     {
@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::ChartreuseWeb);
         flock.resize(number_boids);
-        for (auto& i : flock)
+        for (auto& boid : flock)
         {
-            i.update_position(flock);
-            Boid::draw(i, ctx);
+            boid.update_position(flock);
+            Boid::draw(boid, ctx);
         }
     };
 
