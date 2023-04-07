@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <vector>
 #include "glm/fwd.hpp"
+#include "glm/geometric.hpp"
 #include "glm/glm.hpp"
 #include "p6/p6.h"
 
@@ -44,7 +45,7 @@ glm::vec2 Boid::alignment(std::vector<Boid>& flock)
             float current_dist = glm::distance(this->m_position, other_boid.m_position);
             if (current_dist < perception_radius)
             {
-                steering += other_boid.m_direction;
+                steering += glm::normalize(other_boid.m_direction);
                 nb_near_boids++;
             }
         }
@@ -127,7 +128,7 @@ glm::vec2 Boid::separation(std::vector<Boid>& flock)
 
 void Boid::collision()
 {
-    float     wall_dist = 0.1f; // set the distance from the wall to start avoiding
+    float     wall_dist = 0.5f; // set the distance from the wall to start avoiding
     glm::vec2 avoidance(0.f, 0.f);
 
     if (this->m_position.x >= 1 - wall_dist)
@@ -175,6 +176,13 @@ void Boid::update_position(std::vector<Boid>& flock)
     this->m_direction += this->cohesion(flock);
     this->m_direction += this->separation(flock);
     this->m_direction += this->alignment(flock);
-    this->m_position = this->m_position + this->m_direction * this->m_speed;
+
+    float turning_rate = glm::mix(0.1f, 0.5f, m_speed);
+
+    // interpolate between the current direction and the desired direction based on the turning rate
+    m_direction = glm::mix(m_direction, glm::normalize(m_direction), turning_rate);
+
+    // update the position based on the new direction and speed
+    m_position += m_direction * m_speed;
     collision();
 }
