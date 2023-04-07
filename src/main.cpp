@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
     ctx.maximize_window();
     std::vector<Boid> flock;
     int               number_boids = 10;
+    float             size_boids   = 0.1;
 
     for (int i = 0; i < number_boids; i++)
     {
@@ -32,6 +33,7 @@ int main(int argc, char* argv[])
     ctx.imgui = [&]() {
         ImGui::Begin("Parameters");
         ImGui::SliderInt("Number", &number_boids, 1, 150);
+        ImGui::SliderFloat("Size", &size_boids, 0.01, 0.7);
         ImGui::End();
         ImGui::ShowDemoWindow();
     };
