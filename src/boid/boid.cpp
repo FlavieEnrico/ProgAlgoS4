@@ -85,9 +85,9 @@ glm::vec2 Boid::cohesion(std::vector<Boid>& flock, float& size_boid)
     return steering;
 }
 
-glm::vec2 Boid::separation(std::vector<Boid>& flock, float& size_boid)
+glm::vec2 Boid::separation(std::vector<Boid>& flock, float& size_boid, float& separation_force)
 {
-    float max_dist = size_boid * 2.0f;
+    float max_dist = size_boid * separation_force;
 
     int       nb_near_boids = 0;
     glm::vec2 difference(0.f, 0.f);
@@ -173,10 +173,10 @@ glm::vec2 Boid::change_turning_rate()
     return m_direction = glm::mix(this->m_direction, glm::normalize(this->m_direction), turning_rate);
 }
 
-void Boid::update_position(std::vector<Boid>& flock, float& size_boid)
+void Boid::update_position(std::vector<Boid>& flock, float& size_boid, float& separation_force)
 {
     this->m_direction += this->cohesion(flock, size_boid);
-    this->m_direction += this->separation(flock, size_boid);
+    this->m_direction += this->separation(flock, size_boid, separation_force);
     this->m_direction += this->alignment(flock, size_boid);
     m_position += this->change_turning_rate() * m_speed;
     collision();
