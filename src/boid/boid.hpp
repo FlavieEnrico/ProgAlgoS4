@@ -15,10 +15,11 @@ public:
     Boid(glm::vec2 position, glm::vec2 direction, float radius, float speed);
     Boid();
     ~Boid() = default;
-    void static draw(Boid& my_boid, p6::Context& context);
-    void      update_position(std::vector<Boid>& flock);
-    glm::vec2 separation(std::vector<Boid>& flock);
-    glm::vec2 cohesion(std::vector<Boid>& flock);
-    glm::vec2 alignment(std::vector<Boid>& flock);
+    void static draw(Boid& my_boid, p6::Context& context, float& size_boid);
+    void      update_position(std::vector<Boid>& flock, float& size_boid);
+    glm::vec2 separation(std::vector<Boid>& flock, float& size_boid);
+    glm::vec2 cohesion(std::vector<Boid>& flock, float& size_boid);
+    glm::vec2 alignment(std::vector<Boid>& flock, float& size_boid);
     void      collision();
+    glm::vec2 change_turning_rate();
 };

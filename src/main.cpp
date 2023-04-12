@@ -21,29 +21,30 @@ int main(int argc, char* argv[])
     auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
     std::vector<Boid> flock;
-    int               number_boids = 10;
-    float             size_boids   = 0.1;
+    float             size_boids = 0.1;
 
-    for (int i = 0; i < number_boids; i++)
-    {
-        flock.emplace_back();
-    }
+    flock.resize(10);
 
     // Declare your infinite update loop.
     ctx.imgui = [&]() {
         ImGui::Begin("Parameters");
-        ImGui::SliderInt("Number", &number_boids, 1, 150);
-        ImGui::SliderFloat("Size", &size_boids, 0.01, 0.7);
+        {
+            int nb_boid = flock.size();
+            ImGui::SliderFloat("Size", &size_boids, 0.01, 0.7);
+            if (ImGui::SliderInt("Number", &nb_boid, 1, 150))
+            {
+                flock.resize(nb_boid);
+            }
+        }
         ImGui::End();
         ImGui::ShowDemoWindow();
     };
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::ChartreuseWeb);
-        flock.resize(number_boids);
         for (auto& boid : flock)
         {
-            boid.update_position(flock);
-            Boid::draw(boid, ctx);
+            boid.update_position(flock, size_boids);
+            Boid::draw(boid, ctx, size_boids);
         }
     };
 

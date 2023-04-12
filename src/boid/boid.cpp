@@ -22,33 +22,31 @@ Boid::Boid()
     m_direction = p6::random::direction();
 }
 
-void Boid::draw(Boid& my_boid, p6::Context& context)
+void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
 {
     context.equilateral_triangle(
         p6::Center(my_boid.m_position),
-        p6::Radius{my_boid.m_radius},
+        p6::Radius{size_boid},
         p6::Rotation{my_boid.m_direction}
     );
 }
 
-glm::vec2 Boid::alignment(std::vector<Boid>& flock)
+glm::vec2 Boid::alignment(std::vector<Boid>& flock, float& size_boid)
 {
-    float perception_radius = m_radius * 5.0f;
+    float perception_radius = size_boid * 5.0f;
     int   nb_near_boids     = 0;
 
     glm::vec2 steering(0.f, 0.f);
 
     for (auto& other_boid : flock)
     {
-        if (this != &other_boid)
-        {
-            float current_dist = glm::distance(this->m_position, other_boid.m_position);
-            if (current_dist < perception_radius)
-            {
-                steering += glm::normalize(other_boid.m_direction);
-                nb_near_boids++;
-            }
-        }
+        if (this == &other_boid)
+            continue;
+        float current_dist = glm::distance(this->m_position, other_boid.m_position);
+        if (current_dist > perception_radius)
+            continue;
+        steering += glm::normalize(other_boid.m_direction);
+        nb_near_boids++;
     }
 
     if (nb_near_boids > 0)
@@ -59,24 +57,22 @@ glm::vec2 Boid::alignment(std::vector<Boid>& flock)
     return steering;
 }
 
-glm::vec2 Boid::cohesion(std::vector<Boid>& flock)
+glm::vec2 Boid::cohesion(std::vector<Boid>& flock, float& size_boid)
 {
-    float perception_radius = m_radius * 5.0f;
+    float perception_radius = size_boid * 5.0f;
     int   nb_near_boids     = 0;
 
     glm::vec2 steering(0.f, 0.f);
 
     for (auto& other_boid : flock)
     {
-        if (this != &other_boid)
-        {
-            float current_dist = glm::distance(this->m_position, other_boid.m_position);
-            if (current_dist < perception_radius)
-            {
-                steering += other_boid.m_position;
-                nb_near_boids++;
-            }
-        }
+        if (this == &other_boid)
+            continue;
+        float current_dist = glm::distance(this->m_position, other_boid.m_position);
+        if (current_dist > perception_radius)
+            continue;
+        steering += other_boid.m_position;
+        nb_near_boids++;
     }
     // if there are one or several boids around my_boid then change his behavior
     if (nb_near_boids > 0)
@@ -89,9 +85,9 @@ glm::vec2 Boid::cohesion(std::vector<Boid>& flock)
     return steering;
 }
 
-glm::vec2 Boid::separation(std::vector<Boid>& flock)
+glm::vec2 Boid::separation(std::vector<Boid>& flock, float& size_boid)
 {
-    float max_dist = m_radius * 2.0f;
+    float max_dist = size_boid * 2.0f;
 
     int       nb_near_boids = 0;
     glm::vec2 difference(0.f, 0.f);
@@ -99,21 +95,20 @@ glm::vec2 Boid::separation(std::vector<Boid>& flock)
 
     for (auto& other_boid : flock)
     {
-        if (this != &other_boid)
-        {
-            float current_dist = glm::distance(this->m_position, other_boid.m_position);
-            if (current_dist < max_dist)
-            {
-                difference = this->m_position - other_boid.m_position;
-                // The difference is inversely proportional to the distance
-                if (current_dist != 0)
-                {
-                    difference /= current_dist;
-                }
-                steering += difference;
-                nb_near_boids++;
-            }
-        }
+        if (this == &other_boid)
+            continue;
+
+        float current_dist = glm::distance(this->m_position, other_boid.m_position);
+        if (current_dist >= max_dist)
+            continue;
+
+        difference = this->m_position - other_boid.m_position;
+        // The difference is inversely proportional to the distance
+        if (current_dist == 0.00001f)
+            continue;
+        difference /= current_dist;
+        steering += difference;
+        nb_near_boids++;
     }
     // if there are one or several boids around my_boid then change his behavior
     if (nb_near_boids > 0)
@@ -171,18 +166,18 @@ void Boid::collision()
     }
 }
 
-void Boid::update_position(std::vector<Boid>& flock)
+glm::vec2 Boid::change_turning_rate()
 {
-    this->m_direction += this->cohesion(flock);
-    this->m_direction += this->separation(flock);
-    this->m_direction += this->alignment(flock);
+    // Necessary: Otherwise, the boids are turning too slowly and collide with the walls.
+    float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
+    return m_direction = glm::mix(this->m_direction, glm::normalize(this->m_direction), turning_rate);
+}
 
-    float turning_rate = glm::mix(0.1f, 0.5f, m_speed);
-
-    // interpolate between the current direction and the desired direction based on the turning rate
-    m_direction = glm::mix(m_direction, glm::normalize(m_direction), turning_rate);
-
-    // update the position based on the new direction and speed
-    m_position += m_direction * m_speed;
+void Boid::update_position(std::vector<Boid>& flock, float& size_boid)
+{
+    this->m_direction += this->cohesion(flock, size_boid);
+    this->m_direction += this->separation(flock, size_boid);
+    this->m_direction += this->alignment(flock, size_boid);
+    m_position += this->change_turning_rate() * m_speed;
     collision();
 }
