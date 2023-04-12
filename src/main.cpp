@@ -21,7 +21,8 @@ int main(int argc, char* argv[])
     auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
     std::vector<Boid> flock;
-    float             size_boids = 0.1;
+    float             size_boids       = 0.1;
+    float             separation_force = 2.0f;
 
     flock.resize(10);
 
@@ -35,6 +36,7 @@ int main(int argc, char* argv[])
             {
                 flock.resize(nb_boid);
             }
+            ImGui::SliderFloat("Separation Force", &separation_force, 2.0f, 7.0f);
         }
         ImGui::End();
         ImGui::ShowDemoWindow();
@@ -43,7 +45,7 @@ int main(int argc, char* argv[])
         ctx.background(p6::NamedColor::ChartreuseWeb);
         for (auto& boid : flock)
         {
-            boid.update_position(flock, size_boids);
+            boid.update_position(flock, size_boids, separation_force);
             Boid::draw(boid, ctx, size_boids);
         }
     };

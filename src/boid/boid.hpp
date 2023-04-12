@@ -16,8 +16,8 @@ public:
     Boid();
     ~Boid() = default;
     void static draw(Boid& my_boid, p6::Context& context, float& size_boid);
-    void      update_position(std::vector<Boid>& flock, float& size_boid);
-    glm::vec2 separation(std::vector<Boid>& flock, float& size_boid);
+    void      update_position(std::vector<Boid>& flock, float& size_boid, float& separation_force);
+    glm::vec2 separation(std::vector<Boid>& flock, float& size_boid, float& separation_force);
     glm::vec2 cohesion(std::vector<Boid>& flock, float& size_boid);
     glm::vec2 alignment(std::vector<Boid>& flock, float& size_boid);
     void      collision();
