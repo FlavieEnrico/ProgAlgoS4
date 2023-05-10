@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include "../src-common/glimac/common.hpp"
-#include "../src-common/glimac/sphere_vertices.hpp"
+#include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 #include "p6/p6.h"
@@ -47,13 +47,13 @@ int main(int argc, char* argv[])
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // std::vector<glimac::ShapeVertex> my_sphere;
-    // sphere
-    std::vector<glimac::ShapeVertex> my_sphere =
-        glimac::sphere_vertices(1.f, 32, 16);
+    // std::vector<glimac::ShapeVertex> my_cone;
+    // cone
+    std::vector<glimac::ShapeVertex> my_cone =
+        glimac::cone_vertices(1.f, 0.5f, 32, 16);
 
     // Remplir VBO
-    glBufferData(GL_ARRAY_BUFFER, my_sphere.size() * sizeof(glimac::ShapeVertex), my_sphere.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, my_cone.size() * sizeof(glimac::ShapeVertex), my_cone.data(), GL_STATIC_DRAW);
 
     // VAO
     GLuint vao = 0;
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
         Shader.set("uMVPMatrix", ProjMatrix * MVMatrix);
         Shader.set("uNormalMatrix", NormalMatrix);
 
-        glDrawArrays(GL_TRIANGLES, 0, my_sphere.size());
+        glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
         /*
         ctx.background(p6::NamedColor::ChartreuseWeb);
         for (auto& boid : flock)
