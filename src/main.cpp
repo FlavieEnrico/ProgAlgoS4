@@ -31,10 +31,6 @@ int main(int argc, char* argv[])
     p6::Shader Shader =
         p6::load_shader("shaders/Boid.vs.glsl", "shaders/Boid.fs.glsl");
 
-    // GLuint uMVPMatrix    = glGetUniformLocation(Shader.id(), "uMVPMatrix");
-    // GLuint uMVMatrix     = glGetUniformLocation(Shader.id(), "uMVMatrix");
-    // GLuint uNormalMatrix = glGetUniformLocation(Shader.id(), "uNormalMatrix");
-
     glm::mat4 ProjMatrix = glm::perspective(
         glm::radians(70.f),
         (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
@@ -90,7 +86,7 @@ int main(int argc, char* argv[])
     glBindVertexArray(0);
 
     // our boids
-    /*
+
     std::vector<Boid> flock;
     float             size_boids       = 0.1f;
     float             separation_force = 2.0f;
@@ -98,10 +94,9 @@ int main(int argc, char* argv[])
     float             cohesion_force   = 5.0f;
 
     flock.resize(10);
-    */
+
     // Declare your infinite update loop.
     ctx.imgui = [&]() {
-        /*
         ImGui::Begin("Parameters");
         {
             int nb_boid = flock.size();
@@ -116,7 +111,6 @@ int main(int argc, char* argv[])
         }
         ImGui::End();
         ImGui::ShowDemoWindow();
-        */
     };
 
     glEnable(GL_DEPTH_TEST);
@@ -126,12 +120,6 @@ int main(int argc, char* argv[])
         // Binding VAO
         glBindVertexArray(vao);
 
-        // glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-
-        // glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix *
-        // MVMatrix)); glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE,
-        // glm::value_ptr(NormalMatrix));
-
         Shader.set("uMVMatrix", MVMatrix);
         Shader.set("uMVPMatrix", ProjMatrix * MVMatrix);
         Shader.set("uNormalMatrix", NormalMatrix);
@@ -139,12 +127,12 @@ int main(int argc, char* argv[])
         glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
         /*
         ctx.background(p6::NamedColor::ChartreuseWeb);
+        */
         for (auto& boid : flock)
         {
             boid.update_position(flock, size_boids, separation_force, alignment_force, cohesion_force);
             Boid::draw(boid, ctx, size_boids);
         }
-        */
     };
     glBindVertexArray(0);
     // Should be done last. It starts the infinite loop.
