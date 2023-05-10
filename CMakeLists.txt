@@ -6,7 +6,8 @@ project(ProgAlgoS4)
 
 # ---Declare source files---
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+file(GLOB_RECURSE COMMON_FILES CONFIGURE_DEPENDS src-common/*)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${COMMON_FILES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 # ---Choose C++ version---
@@ -48,3 +49,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(p6)
 target_link_libraries(${PROJECT_NAME} PRIVATE p6::p6)
+
+
+# ---Set the output folder---
+set_target_properties(${PROJECT_NAME} PROPERTIES
+RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${PROJECT_NAME})
+
+# ---Copy the assets and the shaders to the output folder (where the executable is created)---
+Cool__target_copy_folder(${PROJECT_NAME} assets)
+Cool__target_copy_folder(${PROJECT_NAME} shaders)
