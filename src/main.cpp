@@ -94,6 +94,8 @@ int main(int argc, char* argv[])
     std::vector<Boid> flock;
     float             size_boids       = 0.1f;
     float             separation_force = 2.0f;
+    float             alignment_force  = 5.0f;
+    float             cohesion_force   = 5.0f;
 
     flock.resize(10);
     */
@@ -109,6 +111,8 @@ int main(int argc, char* argv[])
                 flock.resize(nb_boid);
             }
             ImGui::SliderFloat("Separation Force", &separation_force, 2.0f, 7.0f);
+            ImGui::SliderFloat("Alignment Force", &alignment_force, 2.0f, 7.0f);
+            ImGui::SliderFloat("Cohesion Force", &cohesion_force, 2.0f, 7.0f);
         }
         ImGui::End();
         ImGui::ShowDemoWindow();
@@ -137,7 +141,7 @@ int main(int argc, char* argv[])
         ctx.background(p6::NamedColor::ChartreuseWeb);
         for (auto& boid : flock)
         {
-            boid.update_position(flock, size_boids, separation_force);
+            boid.update_position(flock, size_boids, separation_force, alignment_force, cohesion_force);
             Boid::draw(boid, ctx, size_boids);
         }
         */
