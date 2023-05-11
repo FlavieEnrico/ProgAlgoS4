@@ -2,6 +2,9 @@
 #include "boid.hpp"
 #include <cstdio>
 #include <vector>
+#include "../src-common/glimac/FreeflyCamera.hpp"
+#include "../src-common/glimac/common.hpp"
+#include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/glm.hpp"
@@ -26,6 +29,8 @@ Boid::Boid()
     m_direction.z = p6::random::number(-1, 1);
 }
 
+/*
+//draw boids 2D
 void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
 {
     float grey   = glm::abs(my_boid.m_position.z);
@@ -35,6 +40,30 @@ void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
         p6::Radius{size_boid},
         p6::Rotation{my_boid.m_direction}
     );
+}
+*/
+// boids 3D
+void Boid::draw(const Boid& my_boid, p6::Shader& Shader, FreeflyCamera& viewMatrix, glm::mat4& MVMatrix, glm::mat4& ProjMatrix, glm::mat4& NormalMatrix, std::vector<glimac::ShapeVertex>& my_cone)
+{
+    /*float grey   = glm::abs(my_boid.m_position.z);
+    context.fill = p6::Color(grey, grey, grey);
+    context.equilateral_triangle(
+        p6::Center(my_boid.m_position),
+        p6::Radius{size_boid},
+        p6::Rotation{my_boid.m_direction}
+    );*/
+    MVMatrix = glm::translate(MVMatrix, my_boid.m_position);
+    // MVMatrix = viewMatrix.getViewMatrix() * MVMatrix;
+
+    Shader.set("uMVMatrix", MVMatrix);
+    Shader.set("uMVPMatrix", ProjMatrix * MVMatrix);
+    Shader.set("uNormalMatrix", NormalMatrix);
+
+    glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
+
+    /*for later
+    glDrawArrays(GL_TRIANGLES_FAN, 0, my_shape.getVertexCount());
+    */
 }
 
 glm::vec3 Boid::alignment(std::vector<Boid>& flock, float perception_radius)

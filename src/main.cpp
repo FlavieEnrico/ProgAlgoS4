@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include "../src-common/glimac/FreeflyCamera.hpp"
 #include "../src-common/glimac/common.hpp"
 #include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -31,15 +32,21 @@ int main(int argc, char* argv[])
     p6::Shader Shader =
         p6::load_shader("shaders/Boid.vs.glsl", "shaders/Boid.fs.glsl");
 
+    // initialize Matrix
+
+    FreeflyCamera camera = FreeflyCamera();
+    camera.moveFront(-5);
     glm::mat4 ProjMatrix = glm::perspective(
         glm::radians(70.f),
         (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
     );
     glm::mat4 MVMatrix(1.0f);
-    MVMatrix               = glm::translate(MVMatrix, glm::vec3(0.f, 0.f, -5.f));
+    MVMatrix = camera.getViewMatrix();
+    // MVMatrix = glm::lookAt(glm::vec3(0, 0, balais.getPosition()), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)) * camera.getViewMatrix();
+    //  MVMatrix               = glm::translate(MVMatrix, glm::vec3(0.f, 0.f, 0.f));
     glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-    // VBO
+    //  VBO
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -110,19 +117,36 @@ int main(int argc, char* argv[])
             ImGui::SliderFloat("Cohesion Force", &cohesion_force, 2.0f, 7.0f);
         }
         ImGui::End();
-        ImGui::ShowDemoWindow();
     };
+
+    bool Z = false;
+    bool Q = false;
+    bool S = false;
+    bool D = false;
 
     glEnable(GL_DEPTH_TEST);
     ctx.update = [&]() {
+        if (Z)
+        {
+            camera.moveFront(0.1);
+        }
+        if (Q)
+        {
+            camera.moveLeft(0.1);
+        }
+        if (S)
+        {
+            camera.moveFront(-0.1);
+        }
+        if (D)
+        {
+            camera.moveLeft(-0.1);
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Binding VAO
         glBindVertexArray(vao);
-
-        Shader.set("uMVMatrix", MVMatrix);
-        Shader.set("uMVPMatrix", ProjMatrix * MVMatrix);
-        Shader.set("uNormalMatrix", NormalMatrix);
 
         glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
         /*
@@ -131,10 +155,54 @@ int main(int argc, char* argv[])
         for (auto& boid : flock)
         {
             boid.update_position(flock, size_boids, separation_force, alignment_force, cohesion_force);
-            Boid::draw(boid, ctx, size_boids);
+
+            boid.draw(boid, Shader, camera, MVMatrix, ProjMatrix, NormalMatrix, my_cone);
         }
     };
     glBindVertexArray(0);
+
+    ctx.key_pressed = [&Z, &Q, &S, &D](const p6::Key& key) {
+        if (key.physical == GLFW_KEY_W)
+        {
+            Z = true;
+        }
+        if (key.physical == GLFW_KEY_A)
+        {
+            Q = true;
+        }
+        if (key.physical == GLFW_KEY_S)
+        {
+            S = true;
+        }
+        if (key.physical == GLFW_KEY_D)
+        {
+            D = true;
+        }
+    };
+
+    ctx.key_released = [&Z, &Q, &S, &D](const p6::Key& key) {
+        if (key.physical == GLFW_KEY_W)
+        {
+            Z = false;
+        }
+        if (key.physical == GLFW_KEY_A)
+        {
+            Q = false;
+        }
+        if (key.physical == GLFW_KEY_S)
+        {
+            S = false;
+        }
+        if (key.physical == GLFW_KEY_D)
+        {
+            D = false;
+        }
+    };
+
+    ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
+        camera.rotateLeft(button.delta.x * 50);
+        camera.rotateUp(-button.delta.y * 50);
+    };
     // Should be done last. It starts the infinite loop.
     ctx.start();
 

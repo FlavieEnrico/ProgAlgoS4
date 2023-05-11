@@ -1,10 +1,3 @@
-//
-//  FreeflyCamera.cpp
-//  glimac
-//
-//  Created by MissBidule on 27/02/2023.
-//
-
 #include "FreeflyCamera.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
