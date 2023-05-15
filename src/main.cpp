@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
         // Binding VAO
         glBindVertexArray(vao);
 
-        glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
+        // glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
         /*
         ctx.background(p6::NamedColor::ChartreuseWeb);
         */
