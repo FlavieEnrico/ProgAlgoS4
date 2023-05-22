@@ -1,12 +1,15 @@
 #include "boid.hpp"
 #include <cstdio>
+#include <filesystem>
 #include <vector>
 #include "../src-common/glimac/FreeflyCamera.hpp"
 #include "../src-common/glimac/common.hpp"
 #include "../src-common/glimac/cone_vertices.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/glm.hpp"
+#include "glm/matrix.hpp"
 #include "p6/p6.h"
 
 Boid::Boid(glm::vec3 position, glm::vec3 direction, float radius, float speed)
@@ -21,7 +24,7 @@ Boid::Boid()
     m_position.z = p6::random::number(-1, 1);
 
     m_radius = 0.1f;
-    m_speed  = 0.001f;
+    m_speed  = 0.01f;
     // m_direction = p6::random::direction();
     m_direction.x = p6::random::number(-1, 1);
     m_direction.y = p6::random::number(-1, 1);
@@ -42,13 +45,40 @@ void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
 }
 */
 // boids 3D
-void Boid::draw(const Boid& my_boid, p6::Shader& Shader, FreeflyCamera viewMatrix, glm::mat4 MVMatrix, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, const std::vector<glimac::ShapeVertex>& my_cone)
+
+void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction)
 {
-    MVMatrix = glm::translate(MVMatrix, my_boid.m_position);
-    //    MVMatrix = viewMatrix.getViewMatrix() * MVMatrix;
+    frontAxis = glm::normalize(direction);
+    leftAxis  = glm::normalize(glm::cross(frontAxis, glm::vec3(0, 1, 0)));
+    upAxis    = glm::normalize(glm::cross(leftAxis, frontAxis));
+}
+
+void Boid::draw(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, const std::vector<glimac::ShapeVertex>& my_cone)
+{
+    glm::mat4 ModelMatrix = glm::mat4(1.0f);
+
+    ModelMatrix = glm::translate(ModelMatrix, this->m_position);
+
+    glm::vec3 forwardAxis, leftAxis, upAxis;
+    computeDirectionVectors(forwardAxis, leftAxis, upAxis, this->m_direction);
+    // construct matrix from axes
+    glm::mat4 rotationMatrix = glm::mat4(
+        glm::vec4(leftAxis, 0.0f),
+        glm::vec4(upAxis, 0.0f),
+        glm::vec4(forwardAxis, 0.0f),
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+    );
+    ModelMatrix = ModelMatrix * rotationMatrix;
+    ModelMatrix = glm::scale(ModelMatrix, glm::vec3(this->m_radius));
+
+    glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
+
+    glm::mat4 MVPMatrix = ProjMatrix * MVMatrix;
+
+    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
     Shader.set("uMVMatrix", MVMatrix);
-    Shader.set("uMVPMatrix", ProjMatrix * MVMatrix);
+    Shader.set("uMVPMatrix", MVPMatrix);
     Shader.set("uNormalMatrix", NormalMatrix);
 
     glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
@@ -56,6 +86,11 @@ void Boid::draw(const Boid& my_boid, p6::Shader& Shader, FreeflyCamera viewMatri
     /*for later
     glDrawArrays(GL_TRIANGLES_FAN, 0, my_shape.getVertexCount());
     */
+}
+
+void Boid::updateRadius(float newRadius)
+{
+    this->m_radius = newRadius;
 }
 
 glm::vec3 Boid::alignment(std::vector<Boid>& flock, float perception_radius)
@@ -129,6 +164,8 @@ glm::vec3 Boid::separation(std::vector<Boid>& flock, float perception_radius)
         // The difference is inversely proportional to the distance
         if (current_dist == 0.00001f)
             continue;
+
+        // difference = difference / static_cast<float>(difference.length());
         difference /= current_dist;
         steering += difference;
         nb_near_boids++;
@@ -146,62 +183,38 @@ glm::vec3 Boid::separation(std::vector<Boid>& flock, float perception_radius)
 
 void Boid::collision()
 {
-    float     wall_dist = 0.005f; // set the distance from the wall to start avoiding
+    float     wall_dist = 0.5f; // set the distance from the wall to start avoiding
     glm::vec3 avoidance(0.f, 0.f, 0.f);
+    float     wall_position = 2.f;
 
-    if (this->m_position.x >= 0.1 - wall_dist)
+    if (this->m_position.x >= wall_position - wall_dist)
     {
-        avoidance.x = -0.1;
+        avoidance.x = -wall_position;
     }
-    if (this->m_position.x <= -0.1 + wall_dist)
+    if (this->m_position.x <= -wall_position + wall_dist)
     {
-        avoidance.x = 0.1;
+        avoidance.x = wall_position;
     }
-    if (this->m_position.y >= 0.1 - wall_dist)
+    if (this->m_position.y >= wall_position - wall_dist)
     {
-        avoidance.y = -0.1;
+        avoidance.y = -wall_position;
     }
-    if (this->m_position.y <= -0.1 + wall_dist)
+    if (this->m_position.y <= -wall_position + wall_dist)
     {
-        avoidance.y = 0.1;
+        avoidance.y = wall_position;
     }
-    if (this->m_position.z >= 0.1 - wall_dist)
+    if (this->m_position.z >= wall_position - wall_dist)
     {
-        avoidance.z = -0.1;
+        avoidance.z = -wall_position;
     }
-    if (this->m_position.z <= -0.1 + wall_dist)
+    if (this->m_position.z <= -wall_position + wall_dist)
     {
-        avoidance.z = 0.1;
+        avoidance.z = wall_position;
     }
 
     if (avoidance != glm::vec3(0.f, 0.f, 0.f))
     {
         this->m_direction += avoidance;
-    }
-
-    if (this->m_position.x >= 0.1)
-    {
-        this->m_position.x = 0.1;
-    }
-    if (this->m_position.x <= -0.1)
-    {
-        this->m_position.x = -0.1;
-    }
-    if (this->m_position.y >= 0.1)
-    {
-        this->m_position.y = 0.1;
-    }
-    if (this->m_position.y <= -0.1)
-    {
-        this->m_position.y = -0.1;
-    }
-    if (this->m_position.z >= 0.1)
-    {
-        this->m_position.z = 0.1;
-    }
-    if (this->m_position.z <= -0.1)
-    {
-        this->m_position.z = -0.1;
     }
 }
 /*
@@ -212,30 +225,27 @@ glm::vec3 Boid::change_turning_rate()
     return m_direction = glm::mix(this->m_direction, glm::normalize(this->m_direction), turning_rate);
 }
 */
-glm::vec3 Boid::change_turning_rate()
+void Boid::change_turning_rate()
 {
     // Necessary: Otherwise, the boids are turning too slowly and collide with the walls.
     // float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
 
     // Modify the turning rate for each dimension separately
-    float turning_rate_x = glm::mix(0.1f, 0.5f, this->m_speed);
-    float turning_rate_y = glm::mix(0.1f, 0.5f, this->m_speed);
-    float turning_rate_z = glm::mix(0.1f, 0.5f, this->m_speed);
-
-    // Modify the direction for each dimension separately
-    float direction_x = glm::mix(this->m_direction.x, this->m_direction.x, turning_rate_x);
-    float direction_y = glm::mix(this->m_direction.y, this->m_direction.y, turning_rate_y);
-    float direction_z = glm::mix(this->m_direction.z, this->m_direction.z, turning_rate_z);
+    float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
 
     // Create a new direction vector with the modified values
-    return m_direction = glm::vec3(direction_x, direction_y, direction_z);
+    m_direction = glm::mix(this->m_direction, glm::normalize(this->m_direction), turning_rate);
 }
 
-void Boid::update_position(std::vector<Boid>& flock, float& size_boid, float& separation_force, float& alignment_force, float& cohesion_force)
+void Boid::update_position(std::vector<Boid>& flock, float& separation_force, float& alignment_force, float& cohesion_force)
 {
-    this->m_direction += this->cohesion(flock, size_boid * cohesion_force);
-    this->m_direction += this->separation(flock, size_boid * separation_force);
-    this->m_direction += this->alignment(flock, size_boid * alignment_force);
-    m_position += this->change_turning_rate() * m_speed;
+    this->m_direction += this->cohesion(flock, this->m_radius * cohesion_force);
+    this->m_direction += this->separation(flock, this->m_radius * separation_force);
+    this->m_direction += this->alignment(flock, this->m_radius * alignment_force);
     collision();
+
+    m_direction = glm::normalize(m_direction);
+    //  m_position += this->change_turning_rate() * m_speed;
+    change_turning_rate();
+    m_position += m_direction * m_speed;
 }

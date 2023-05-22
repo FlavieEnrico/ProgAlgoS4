@@ -40,11 +40,7 @@ int main(int argc, char* argv[])
         glm::radians(70.f),
         (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
     );
-    glm::mat4 MVMatrix(1.0f);
-    MVMatrix = camera.getViewMatrix();
-    // MVMatrix = glm::lookAt(glm::vec3(0, 0, balais.getPosition()), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)) * camera.getViewMatrix();
-    //  MVMatrix               = glm::translate(MVMatrix, glm::vec3(0.f, 0.f, 0.f));
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+    glm::mat4 ViewMatrix = camera.getViewMatrix();
 
     //  VBO
     GLuint vbo = 0;
@@ -98,7 +94,7 @@ int main(int argc, char* argv[])
     float             size_boids       = 0.1f;
     float             separation_force = 2.0f;
     float             alignment_force  = 5.0f;
-    float             cohesion_force   = 5.0f;
+    float             cohesion_force   = 2.0f;
 
     flock.resize(10);
 
@@ -107,14 +103,20 @@ int main(int argc, char* argv[])
         ImGui::Begin("Parameters");
         {
             int nb_boid = flock.size();
-            ImGui::SliderFloat("Size", &size_boids, 0.01, 0.7);
+            if (ImGui::SliderFloat("Size", &size_boids, 0.01, 0.7))
+            {
+                for (auto& boid : flock)
+                {
+                    boid.updateRadius(size_boids);
+                }
+            }
             if (ImGui::SliderInt("Number", &nb_boid, 1, 150))
             {
                 flock.resize(nb_boid);
             }
             ImGui::SliderFloat("Separation Force", &separation_force, 2.0f, 7.0f);
             ImGui::SliderFloat("Alignment Force", &alignment_force, 2.0f, 7.0f);
-            ImGui::SliderFloat("Cohesion Force", &cohesion_force, 2.0f, 7.0f);
+            ImGui::SliderFloat("Cohesion Force", &cohesion_force, 0.0f, 7.0f);
         }
         ImGui::End();
     };
@@ -154,9 +156,9 @@ int main(int argc, char* argv[])
         */
         for (auto& boid : flock)
         {
-            boid.update_position(flock, size_boids, separation_force, alignment_force, cohesion_force);
+            boid.update_position(flock, separation_force, alignment_force, cohesion_force);
 
-            boid.draw(boid, Shader, camera, MVMatrix, ProjMatrix, NormalMatrix, my_cone);
+            boid.draw(Shader, ViewMatrix, ProjMatrix, my_cone);
         }
     };
     glBindVertexArray(0);

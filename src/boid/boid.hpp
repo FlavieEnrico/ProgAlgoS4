@@ -22,11 +22,12 @@ public:
     Boid();
     ~Boid() = default;
     // void draw(Boid& my_boid, p6::Context& context, float& size_boid)
-    void      draw(const Boid& my_boid, p6::Shader& Shader, FreeflyCamera viewMatrix, glm::mat4 MVMatrix, glm::mat4 ProjMatrix, glm::mat4 NormalMatrix, const std::vector<glimac::ShapeVertex>& my_cone);
-    void      update_position(std::vector<Boid>& flock, float& size_boid, float& separation_force, float& alignment_force, float& cohesion_force);
+    void      draw(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, const std::vector<glimac::ShapeVertex>& my_cone);
+    void      update_position(std::vector<Boid>& flock, float& separation_force, float& alignment_force, float& cohesion_force);
+    void      updateRadius(float newRadius);
     glm::vec3 separation(std::vector<Boid>& flock, float perception_radius);
     glm::vec3 cohesion(std::vector<Boid>& flock, float perception_radius);
     glm::vec3 alignment(std::vector<Boid>& flock, float perception_radius);
     void      collision();
-    glm::vec3 change_turning_rate();
+    void      change_turning_rate();
 };
