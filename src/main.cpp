@@ -9,6 +9,7 @@
 #include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
+#include "light/light_manager.hpp"
 #include "loader/model.hpp"
 #include "p6/p6.h"
 
@@ -37,24 +38,25 @@ int main(int argc, char* argv[])
 
     int        width  = ctx.current_canvas_width();
     int        height = ctx.current_canvas_height();
-    p6::Shader Shader =
-        p6::load_shader("shaders/Boid.vs.glsl", "shaders/Boid.fs.glsl");
+    p6::Shader Shader = p6::load_shader("shaders/3D.vs.glsl", "shaders/PointLight.fs.glsl");
 
     // initialize Matrix
     Arpenteur     arpenteur;
     FreeflyCamera camera = FreeflyCamera(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y, arpenteur.getPosition().z + 2});
-    // camera.moveFront(-5);
-    //  1
-    // TrackballCamera camera;
-    // camera.moveFront(-5);
 
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ((float)width / (float)height), 0.1f, 100.f);
-    // 2
-    /*glm::mat4 ProjMatrix = glm::perspective(
-        glm::radians(70.f),
-        (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
-    );*/
-    // glm::mat4 ViewMatrix = camera.getViewMatrix();
+
+    // tinyobj::attrib_t                my_attrib;
+    // std::vector<tinyobj::shape_t>    my_shapes;
+    // std::vector<tinyobj::material_t> my_materials;
+    // std::string                      warning_message, error_message;
+    // std::string                      my_filename = "./assets/models/cube.obj";
+    // std::string                      mtl_path    = "./assets/models/";
+
+    // bool loadTest = tinyobj::LoadObj(&my_attrib, &my_shapes, &my_materials, &warning_message, &error_message, (my_filename.c_str()), (mtl_path.c_str()));
+
+    Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
+    my_cube.create_vbo();
 
     // tinyobj::attrib_t                my_attrib;
     // std::vector<tinyobj::shape_t>    my_shapes;
@@ -95,6 +97,9 @@ int main(int argc, char* argv[])
     const GLuint VERTEX_ATTR_UV = 2;
     glEnableVertexAttribArray(VERTEX_ATTR_UV);
 
+    const GLuint VERTEX_ATTR_COLOR = 3;
+    glEnableVertexAttribArray(VERTEX_ATTR_COLOR);
+
     // specification vertex attributes
     glVertexAttribPointer(
         VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
@@ -108,7 +113,10 @@ int main(int argc, char* argv[])
         VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
         (const GLvoid*)(offsetof(glimac::ShapeVertex, texCoords))
     );
-
+    glVertexAttribPointer(
+        VERTEX_ATTR_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
+        (const GLvoid*)(offsetof(glimac::ShapeVertex, color))
+    );
     // Debinding VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // Debinding VAO
@@ -147,13 +155,17 @@ int main(int argc, char* argv[])
         ImGui::End();
     };
 
-    bool Z     = false;
-    bool Q     = false;
-    bool S     = false;
-    bool D     = false;
-    bool R     = false;
-    bool shift = false;
+    // light
+    Light pointLight1(arpenteur.getPosition(), 0.6f, glm::vec3(0.8f, 0.1f, 0.3f));
+    Light pointLight2(glm::vec3(-0.3f, 0.2f, -2.f), 0.3f, glm::vec3(0.f, 0.f, 1.f));
+    bool  Z     = false;
+    bool  Q     = false;
+    bool  S     = false;
+    bool  D     = false;
+    bool  R     = false;
+    bool  shift = false;
     camera.rotateUp(-20);
+
     glEnable(GL_DEPTH_TEST);
 
     ctx.update = [&]() {
@@ -181,7 +193,23 @@ int main(int argc, char* argv[])
         {
             arpenteur.moveDown();
         }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        Shader.use();
+        Shader.set("uKa", glm::vec3(0.2f, 1.f, 0.8f));
+        Shader.set("uKd", glm::vec3(0.8f, 0.8f, 0.8f));
+        Shader.set("uKs", glm::vec3(1.0f, 0.8f, 1.0f));
+        Shader.set("uShininess", 100.0f);
+
+        // Shader.set("uLightIntensity[0]", pointLight1.getIntensity());
+        Shader.set("uLightIntensity[1]", pointLight2.getIntensity());
+        Shader.set("uLightIntensity[0]", pointLight1.getIntensity());
+        Shader.set("uLightColor[1]", pointLight2.getColor());
+        Shader.set("uLightColor[0]", pointLight1.getColor());
+        Shader.set("uLightPos_vs[0]", pointLight1.getPosition());
+        // Shader.set("uLightPos_vs[0]", pointLight1.getPosition());
+        Shader.set("uLightPos_vs[1]", pointLight2.getPosition());
+        //  Shader.set("uLightPos_vs", glm::vec3(0.5f, 0.5f, 0.f));
         arpenteur.setDirection();
 
         camera.setPos(glm::vec3{arpenteur.getPosition().x * 2, arpenteur.getPosition().y * 2 + 0.5, arpenteur.getPosition().z * 2 + 0.9});
@@ -194,10 +222,6 @@ int main(int argc, char* argv[])
 
         glBindVertexArray(vao);
 
-        // glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
-        /*
-        ctx.background(p6::NamedColor::ChartreuseWeb);
-        */
         arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
 
         for (auto& boid : flock)
