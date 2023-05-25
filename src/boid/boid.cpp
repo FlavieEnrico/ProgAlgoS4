@@ -10,7 +10,6 @@
 #include "glm/geometric.hpp"
 #include "glm/glm.hpp"
 #include "glm/matrix.hpp"
-#include "p6/p6.h"
 
 Boid::Boid(glm::vec3 position, glm::vec3 direction, float radius, float speed)
     : m_position(position), m_direction(direction), m_radius(radius), m_speed(speed)

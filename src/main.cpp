@@ -1,12 +1,17 @@
 #include <stdlib.h>
 #include <glm/glm.hpp>
+#include <string>
 #include <vector>
 #include "../src-common/glimac/FreeflyCamera.hpp"
 #include "../src-common/glimac/common.hpp"
 #include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
+#include "loader/model.hpp"
 #include "p6/p6.h"
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "loader/tiny_obj_loader.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "boid/boid.hpp"
@@ -41,6 +46,15 @@ int main(int argc, char* argv[])
         (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
     );
     glm::mat4 ViewMatrix = camera.getViewMatrix();
+
+    // tinyobj::attrib_t                my_attrib;
+    // std::vector<tinyobj::shape_t>    my_shapes;
+    // std::vector<tinyobj::material_t> my_materials;
+    // std::string                      warning_message, error_message;
+    // std::string                      my_filename = "./assets/models/cube.obj";
+    // std::string                      mtl_path    = "./assets/models/";
+
+    // bool loadTest = tinyobj::LoadObj(&my_attrib, &my_shapes, &my_materials, &warning_message, &error_message, (my_filename.c_str()), (mtl_path.c_str()));
 
     //  VBO
     GLuint vbo = 0;
@@ -148,6 +162,7 @@ int main(int argc, char* argv[])
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Binding VAO
+
         glBindVertexArray(vao);
 
         // glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
