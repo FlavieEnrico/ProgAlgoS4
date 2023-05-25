@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
     };
 
     // light
-    Light pointLight1(glm::vec3(0.5, 0.5, 0.0), 0.6f, glm::vec3(0.8f, 0.1f, 0.3f));
+    Light pointLight1(arpenteur.getPosition(), 0.6f, glm::vec3(0.8f, 0.1f, 0.3f));
     Light pointLight2(glm::vec3(-0.3f, 0.2f, -2.f), 0.3f, glm::vec3(0.f, 0.f, 1.f));
     bool  Z     = false;
     bool  Q     = false;
