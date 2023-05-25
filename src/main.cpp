@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <string>
 #include <vector>
 #include "../src-common/glimac/FreeflyCamera.hpp"
+#include "../src-common/glimac/TrackballCamera.hpp"
 #include "../src-common/glimac/common.hpp"
 #include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -10,10 +12,12 @@
 #include "loader/model.hpp"
 #include "p6/p6.h"
 
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "loader/tiny_obj_loader.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT
+#include "arpenteur/arpenteur.hpp"
 #include "boid/boid.hpp"
 #include "doctest/doctest.h"
 
@@ -38,14 +42,20 @@ int main(int argc, char* argv[])
         p6::load_shader("shaders/Boid.vs.glsl", "shaders/Boid.fs.glsl");
 
     // initialize Matrix
+    Arpenteur     arpenteur;
+    FreeflyCamera camera = FreeflyCamera(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y, arpenteur.getPosition().z + 2});
+    // camera.moveFront(-5);
+    //  1
+    // TrackballCamera camera;
+    // camera.moveFront(-5);
 
-    FreeflyCamera camera = FreeflyCamera();
-    camera.moveFront(-5);
-    glm::mat4 ProjMatrix = glm::perspective(
+    glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ((float)width / (float)height), 0.1f, 100.f);
+    // 2
+    /*glm::mat4 ProjMatrix = glm::perspective(
         glm::radians(70.f),
         (static_cast<float>(width) / static_cast<float>(height)), 0.1f, 100.f
-    );
-    glm::mat4 ViewMatrix = camera.getViewMatrix();
+    );*/
+    // glm::mat4 ViewMatrix = camera.getViewMatrix();
 
     // tinyobj::attrib_t                my_attrib;
     // std::vector<tinyobj::shape_t>    my_shapes;
@@ -135,31 +145,48 @@ int main(int argc, char* argv[])
         ImGui::End();
     };
 
-    bool Z = false;
-    bool Q = false;
-    bool S = false;
-    bool D = false;
-
+    bool Z     = false;
+    bool Q     = false;
+    bool S     = false;
+    bool D     = false;
+    bool R     = false;
+    bool shift = false;
+    camera.rotateUp(-20);
     glEnable(GL_DEPTH_TEST);
+
     ctx.update = [&]() {
         if (Z)
         {
-            camera.moveFront(0.1);
+            arpenteur.moveForward();
         }
         if (Q)
         {
-            camera.moveLeft(0.1);
+            arpenteur.rotateLeft();
         }
         if (S)
         {
-            camera.moveFront(-0.1);
+            arpenteur.moveBackward();
         }
         if (D)
         {
-            camera.moveLeft(-0.1);
+            arpenteur.rotateRight();
         }
-
+        if (shift)
+        {
+            arpenteur.moveUp();
+        }
+        if (R)
+        {
+            arpenteur.moveDown();
+        }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        arpenteur.setDirection();
+
+        camera.setPos(glm::vec3{arpenteur.getPosition().x * 2, arpenteur.getPosition().y * 2 + 0.5, arpenteur.getPosition().z * 2 + 0.9});
+
+        // camera.setCoordinates(arpenteur);
+        glm::mat4 ViewMatrix = camera.getViewMatrix();
+        // glm::mat4 ViewMatrix =lookAt(camera.getPos(), arpenteur.getPosition(), {0.f, 0.5f, 0.f});
 
         // Binding VAO
 
@@ -169,6 +196,8 @@ int main(int argc, char* argv[])
         /*
         ctx.background(p6::NamedColor::ChartreuseWeb);
         */
+        arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
+
         for (auto& boid : flock)
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
@@ -178,7 +207,7 @@ int main(int argc, char* argv[])
     };
     glBindVertexArray(0);
 
-    ctx.key_pressed = [&Z, &Q, &S, &D](const p6::Key& key) {
+    ctx.key_pressed = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
         if (key.physical == GLFW_KEY_W)
         {
             Z = true;
@@ -195,9 +224,17 @@ int main(int argc, char* argv[])
         {
             D = true;
         }
+        if (key.physical == GLFW_KEY_LEFT_SHIFT)
+        {
+            shift = true;
+        }
+        if (key.physical == GLFW_KEY_R)
+        {
+            R = true;
+        }
     };
 
-    ctx.key_released = [&Z, &Q, &S, &D](const p6::Key& key) {
+    ctx.key_released = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
         if (key.physical == GLFW_KEY_W)
         {
             Z = false;
@@ -213,6 +250,14 @@ int main(int argc, char* argv[])
         if (key.physical == GLFW_KEY_D)
         {
             D = false;
+        }
+        if (key.physical == GLFW_KEY_LEFT_SHIFT)
+        {
+            shift = false;
+        }
+        if (key.physical == GLFW_KEY_R)
+        {
+            R = false;
         }
     };
 
