@@ -58,18 +58,6 @@ int main(int argc, char* argv[])
     Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
     my_cube.create_vbo();
 
-    // tinyobj::attrib_t                my_attrib;
-    // std::vector<tinyobj::shape_t>    my_shapes;
-    // std::vector<tinyobj::material_t> my_materials;
-    // std::string                      warning_message, error_message;
-    // std::string                      my_filename = "./assets/models/cube.obj";
-    // std::string                      mtl_path    = "./assets/models/";
-
-    // bool loadTest = tinyobj::LoadObj(&my_attrib, &my_shapes, &my_materials, &warning_message, &error_message, (my_filename.c_str()), (mtl_path.c_str()));
-
-    Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
-    my_cube.create_vbo();
-
     //  VBO
     GLuint vbo = 0;
     glGenBuffers(1, &vbo);
