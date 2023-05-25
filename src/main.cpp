@@ -12,7 +12,6 @@
 #include "loader/model.hpp"
 #include "p6/p6.h"
 
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "loader/tiny_obj_loader.h"
 
@@ -65,6 +64,9 @@ int main(int argc, char* argv[])
     // std::string                      mtl_path    = "./assets/models/";
 
     // bool loadTest = tinyobj::LoadObj(&my_attrib, &my_shapes, &my_materials, &warning_message, &error_message, (my_filename.c_str()), (mtl_path.c_str()));
+
+    Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
+    my_cube.create_vbo();
 
     //  VBO
     GLuint vbo = 0;
@@ -204,8 +206,9 @@ int main(int argc, char* argv[])
 
             boid.draw(Shader, ViewMatrix, ProjMatrix, my_cone);
         }
+        glBindVertexArray(0);
+        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix);
     };
-    glBindVertexArray(0);
 
     ctx.key_pressed = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
         if (key.physical == GLFW_KEY_W)
@@ -270,6 +273,7 @@ int main(int argc, char* argv[])
 
     // Clear vbo & vao & texture
     // glDeleteTextures(1, &my_texture);
+
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
 

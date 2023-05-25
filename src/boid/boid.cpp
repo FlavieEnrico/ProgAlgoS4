@@ -1,15 +1,4 @@
 #include "boid.hpp"
-#include <cstdio>
-#include <filesystem>
-#include <vector>
-#include "../src-common/glimac/FreeflyCamera.hpp"
-#include "../src-common/glimac/common.hpp"
-#include "../src-common/glimac/cone_vertices.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
-#include "glm/glm.hpp"
-#include "glm/matrix.hpp"
 
 Boid::Boid(glm::vec3 position, glm::vec3 direction, float radius, float speed)
     : m_position(position), m_direction(direction), m_radius(radius), m_speed(speed)

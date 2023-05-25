@@ -1,7 +1,18 @@
 #pragma once
 #include <stdlib.h>
+#include <cstdio>
+#include <filesystem>
 #include <vector>
+#include "../src-common/glimac/FreeflyCamera.hpp"
+#include "../src-common/glimac/common.hpp"
+#include "../src-common/glimac/cone_vertices.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
+#include "glm/geometric.hpp"
+#include "glm/glm.hpp"
+#include "glm/matrix.hpp"
 #include "p6/p6.h"
+
 
 class Boid {
 private:
