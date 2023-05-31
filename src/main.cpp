@@ -69,6 +69,16 @@ int main(int argc, char* argv[])
 
     // Declare your infinite update loop.
     ctx.imgui = [&]() {
+        ImGui::BeginMainMenuBar();
+        {
+            if (ImGui::BeginMenu("Controls"))
+            {
+                ImGui::Text("Pour se déplacer : Z pour avancer, S pour reculer, Q pour tourner à gauche et D pour tourner à droite. R pour descendre et shift pour monter.");
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
+        }
+
         ImGui::Begin("Parameters");
         {
             int nb_boid = flock.size();
@@ -152,8 +162,6 @@ int main(int argc, char* argv[])
         // camera.setCoordinates(arpenteur);
         glm::mat4 ViewMatrix = camera.getViewMatrix();
         // glm::mat4 ViewMatrix =lookAt(camera.getPos(), arpenteur.getPosition(), {0.f, 0.5f, 0.f});
-
-        // Binding VAO
 
         broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
 

@@ -33,7 +33,7 @@ vec3 blinnPhong(int IndexLight){
     return uka + L * (uLightColor[IndexLight] * uKd * dotW + uKs * specular);
 }
 void main() {
-    vec3 ambient = vec3(0.2);
+    vec3 ambient = vec3(0.0);
     vec3 lightTotal = vec3(0.0);
     for(int i = 0; i < LIGHTS_NB; i++){
         lightTotal += blinnPhong(i);
