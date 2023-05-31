@@ -47,15 +47,7 @@ int main(int argc, char* argv[])
 
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ((float)width / (float)height), 0.1f, 100.f);
 
-    // tinyobj::attrib_t                my_attrib;
-    // std::vector<tinyobj::shape_t>    my_shapes;
-    // std::vector<tinyobj::material_t> my_materials;
-    // std::string                      warning_message, error_message;
-    // std::string                      my_filename = "./assets/models/cube.obj";
-    // std::string                      mtl_path    = "./assets/models/";
-
-    // bool loadTest = tinyobj::LoadObj(&my_attrib, &my_shapes, &my_materials, &warning_message, &error_message, (my_filename.c_str()), (mtl_path.c_str()));
-
+    // Load all the 3D Models
     Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
     my_cube.create_vbo();
 
@@ -163,7 +155,6 @@ int main(int argc, char* argv[])
 
         // Binding VAO
 
-        // arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
         broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
 
         for (auto& boid : flock)
@@ -233,11 +224,11 @@ int main(int argc, char* argv[])
     //     camera.rotateLeft(button.delta.x * 50);
     //     camera.rotateUp(-button.delta.y * 50);
     // };
+
     // Should be done last. It starts the infinite loop.
     ctx.start();
 
     // Clear vbo & vao & texture
-    // glDeleteTextures(1, &my_texture);
 
     return 0;
 }

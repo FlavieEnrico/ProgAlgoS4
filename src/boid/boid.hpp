@@ -24,8 +24,6 @@ public:
     Boid(glm::vec3 position, glm::vec3 direction, float radius, float speed);
     Boid();
     ~Boid() = default;
-    // void draw(Boid& my_boid, p6::Context& context, float& size_boid)
-    void      draw(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, const std::vector<glimac::ShapeVertex>& my_cone);
     void      update_position(std::vector<Boid>& flock, float& separation_force, float& alignment_force, float& cohesion_force);
     void      updateRadius(float newRadius);
     glm::vec3 separation(std::vector<Boid>& flock, float perception_radius);
@@ -37,4 +35,3 @@ public:
     glm::vec3 getDirection() const { return m_direction; };
     float     getSize() const { return m_radius; };
 };
-void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction);

@@ -36,8 +36,6 @@ public:
 
     void setDirection();
 
-    void drawArpenteur(const p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, const std::vector<glimac::ShapeVertex>& my_cone);
-
     // getter
     glm::vec3 getPosition() const { return m_position; };
     glm::vec3 getDirection() const { return m_direction; };

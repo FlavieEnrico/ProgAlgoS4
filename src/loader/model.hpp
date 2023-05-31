@@ -33,3 +33,5 @@ public:
     void order_normals();
     void order_texcoords();
 };
+
+void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction);

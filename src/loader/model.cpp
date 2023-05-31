@@ -12,7 +12,7 @@ Model::Model(std::string filename, std::string mtl_path)
     // fonction qui prend les indices des vertex et construit les faces
     this->order_vertices();
     this->order_normals();
-    // this->order_texcoords();
+    this->order_texcoords();
     m_vbo_vertices  = 8;
     m_vbo_normals   = 6;
     m_vbo_texcoords = 7;
@@ -116,9 +116,13 @@ void Model::create_fill_vao()
 
     // Debinding VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
 
-    // // Debinding VAO
-    // glBindVertexArray(0);
+void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction)
+{
+    frontAxis = glm::normalize(direction);
+    leftAxis  = glm::normalize(glm::cross(frontAxis, glm::vec3(0, 1, 0)));
+    upAxis    = glm::normalize(glm::cross(leftAxis, frontAxis));
 }
 
 void Model::draw_model(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, float size, glm::vec3 direction, glm::vec3 position)

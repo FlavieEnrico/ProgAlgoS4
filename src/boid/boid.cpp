@@ -19,62 +19,6 @@ Boid::Boid()
     m_direction.z = p6::random::number(-1, 1);
 }
 
-/*
-//draw boids 2D
-void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
-{
-    float grey   = glm::abs(my_boid.m_position.z);
-    context.fill = p6::Color(grey, grey, grey);
-    context.equilateral_triangle(
-        p6::Center(my_boid.m_position),
-        p6::Radius{size_boid},
-        p6::Rotation{my_boid.m_direction}
-    );
-}
-*/
-// boids 3D
-void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction)
-{
-    frontAxis = glm::normalize(direction);
-    leftAxis  = glm::normalize(glm::cross(frontAxis, glm::vec3(0, 1, 0)));
-    upAxis    = glm::normalize(glm::cross(leftAxis, frontAxis));
-}
-
-void Boid::draw(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, const std::vector<glimac::ShapeVertex>& my_cone)
-{
-    glm::mat4 ModelMatrix = glm::mat4(1.0f);
-
-    ModelMatrix = glm::translate(ModelMatrix, this->m_position);
-
-    glm::vec3 forwardAxis, leftAxis, upAxis;
-    computeDirectionVectors(forwardAxis, leftAxis, upAxis, this->m_direction);
-    // construct matrix from axes
-    glm::mat4 rotationMatrix = glm::mat4(
-        glm::vec4(leftAxis, 0.0f),
-        glm::vec4(upAxis, 0.0f),
-        glm::vec4(forwardAxis, 0.0f),
-        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-    );
-    ModelMatrix = ModelMatrix * rotationMatrix;
-    ModelMatrix = glm::scale(ModelMatrix, glm::vec3(this->m_radius));
-
-    glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
-
-    glm::mat4 MVPMatrix = ProjMatrix * MVMatrix;
-
-    glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-
-    Shader.set("uMVMatrix", MVMatrix);
-    Shader.set("uMVPMatrix", MVPMatrix);
-    Shader.set("uNormalMatrix", NormalMatrix);
-
-    glDrawArrays(GL_TRIANGLES, 0, my_cone.size());
-
-    /*for later
-    glDrawArrays(GL_TRIANGLES_FAN, 0, my_shape.getVertexCount());
-    */
-}
-
 void Boid::updateRadius(float newRadius)
 {
     this->m_radius = newRadius;
@@ -204,18 +148,10 @@ void Boid::collision()
         this->m_direction += avoidance;
     }
 }
-/*
-glm::vec3 Boid::change_turning_rate()
-{
-    // Necessary: Otherwise, the boids are turning too slowly and collide with the walls.
-    float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
-    return m_direction = glm::mix(this->m_direction, glm::normalize(this->m_direction), turning_rate);
-}
-*/
+
 void Boid::change_turning_rate()
 {
     // Necessary: Otherwise, the boids are turning too slowly and collide with the walls.
-    // float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
 
     // Modify the turning rate for each dimension separately
     float turning_rate = glm::mix(0.1f, 0.5f, this->m_speed);
