@@ -1,4 +1,6 @@
 #include "model.hpp"
+#include "boid/boid.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "loader/model.hpp"
 #include "loader/tiny_obj_loader.h"
@@ -119,23 +121,23 @@ void Model::create_fill_vao()
     // glBindVertexArray(0);
 }
 
-void Model::draw_model(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix)
+void Model::draw_model(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, float size, glm::vec3 direction, glm::vec3 position)
 {
     glm::mat4 ModelMatrix = glm::mat4(1.0f);
 
-    // ModelMatrix = glm::translate(ModelMatrix, this->m_position);
+    ModelMatrix = glm::translate(ModelMatrix, position);
 
-    // glm::vec3 forwardAxis, leftAxis, upAxis;
-    // computeDirectionVectors(forwardAxis, leftAxis, upAxis, this->m_direction);
-    // // construct matrix from axes
-    // glm::mat4 rotationMatrix = glm::mat4(
-    //     glm::vec4(leftAxis, 0.0f),
-    //     glm::vec4(upAxis, 0.0f),
-    //     glm::vec4(forwardAxis, 0.0f),
-    //     glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-    // );
-    // ModelMatrix = ModelMatrix * rotationMatrix;
-    // ModelMatrix = glm::scale(ModelMatrix, glm::vec3(this->m_radius));
+    glm::vec3 forwardAxis, leftAxis, upAxis;
+    computeDirectionVectors(forwardAxis, leftAxis, upAxis, direction);
+    //  construct matrix from axes
+    glm::mat4 rotationMatrix = glm::mat4(
+        glm::vec4(leftAxis, 0.0f),
+        glm::vec4(upAxis, 0.0f),
+        glm::vec4(forwardAxis, 0.0f),
+        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+    );
+    ModelMatrix = ModelMatrix * rotationMatrix;
+    ModelMatrix = glm::scale(ModelMatrix, glm::vec3(size));
 
     glm::mat4 MVMatrix = ViewMatrix * ModelMatrix;
 

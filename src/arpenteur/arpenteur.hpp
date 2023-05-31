@@ -1,5 +1,5 @@
 #pragma once
-#include <stdlib.h>
+#include <cstdlib>
 #include <vector>
 #include "../src-common/glimac/common.hpp"
 #include "glm/fwd.hpp"

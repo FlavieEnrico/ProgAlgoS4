@@ -28,7 +28,7 @@ public:
     ~Model();
     void create_vbo();
     void create_fill_vao();
-    void draw_model(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix);
+    void draw_model(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, float size, glm::vec3 direction, glm::vec3 position);
     void order_vertices();
     void order_normals();
     void order_texcoords();

@@ -13,7 +13,6 @@
 #include "glm/matrix.hpp"
 #include "p6/p6.h"
 
-
 class Boid {
 private:
     glm::vec3 m_position;
@@ -35,3 +34,4 @@ public:
     void      collision();
     void      change_turning_rate();
 };
+void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction);

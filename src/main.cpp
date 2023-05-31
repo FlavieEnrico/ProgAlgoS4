@@ -7,6 +7,7 @@
 #include "../src-common/glimac/TrackballCamera.hpp"
 #include "../src-common/glimac/common.hpp"
 #include "../src-common/glimac/cone_vertices.hpp"
+#include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 #include "light/light_manager.hpp"
@@ -42,7 +43,7 @@ int main(int argc, char* argv[])
 
     // initialize Matrix
     Arpenteur     arpenteur;
-    FreeflyCamera camera = FreeflyCamera(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y, arpenteur.getPosition().z + 2});
+    FreeflyCamera camera = FreeflyCamera(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y, arpenteur.getPosition().z});
 
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ((float)width / (float)height), 0.1f, 100.f);
 
@@ -57,6 +58,9 @@ int main(int argc, char* argv[])
 
     Model my_cube("../../assets/models/cube.obj", "../../assets/models/");
     my_cube.create_vbo();
+
+    Model broom_arpenteur("../../assets/models/broom_smoothed_triangle.obj", "../../assets/models/");
+    broom_arpenteur.create_vbo();
 
     //  VBO
     GLuint vbo = 0;
@@ -200,7 +204,7 @@ int main(int argc, char* argv[])
         //  Shader.set("uLightPos_vs", glm::vec3(0.5f, 0.5f, 0.f));
         arpenteur.setDirection();
 
-        camera.setPos(glm::vec3{arpenteur.getPosition().x * 2, arpenteur.getPosition().y * 2 + 0.5, arpenteur.getPosition().z * 2 + 0.9});
+        camera.setPos(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y + 0.2, arpenteur.getPosition().z + 0.2});
 
         // camera.setCoordinates(arpenteur);
         glm::mat4 ViewMatrix = camera.getViewMatrix();
@@ -208,10 +212,9 @@ int main(int argc, char* argv[])
 
         // Binding VAO
 
+        // arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
+        broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
         glBindVertexArray(vao);
-
-        arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
-
         for (auto& boid : flock)
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
@@ -219,7 +222,7 @@ int main(int argc, char* argv[])
             boid.draw(Shader, ViewMatrix, ProjMatrix, my_cone);
         }
         glBindVertexArray(0);
-        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix);
+        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 3.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.0));
     };
 
     ctx.key_pressed = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
@@ -276,10 +279,10 @@ int main(int argc, char* argv[])
         }
     };
 
-    ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
-        camera.rotateLeft(button.delta.x * 50);
-        camera.rotateUp(-button.delta.y * 50);
-    };
+    // ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
+    //     camera.rotateLeft(button.delta.x * 50);
+    //     camera.rotateUp(-button.delta.y * 50);
+    // };
     // Should be done last. It starts the infinite loop.
     ctx.start();
 

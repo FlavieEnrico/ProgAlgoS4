@@ -33,7 +33,6 @@ void Boid::draw(Boid& my_boid, p6::Context& context, float& size_boid)
 }
 */
 // boids 3D
-
 void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction)
 {
     frontAxis = glm::normalize(direction);
