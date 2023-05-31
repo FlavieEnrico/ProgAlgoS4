@@ -57,6 +57,9 @@ int main(int argc, char* argv[])
     Model key("../../assets/models/key.obj", "../../assets/models/");
     key.create_vbo();
 
+    Model cage("../../assets/models/cage.obj", "../../assets/models/");
+    cage.create_vbo();
+
     // our boids
 
     std::vector<Boid> flock;
@@ -168,13 +171,15 @@ int main(int argc, char* argv[])
 
         broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
 
+        cage.draw_model(Shader, ViewMatrix, ProjMatrix, 0.15f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.f, -2.f, 0.f));
+
         for (auto& boid : flock)
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
 
             key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * boid.getSize(), boid.getDirection(), boid.getPosition());
         }
-        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 2.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.0));
+        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 2.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.f));
     };
 
     ctx.key_pressed = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
@@ -231,10 +236,10 @@ int main(int argc, char* argv[])
         }
     };
 
-    // ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
-    //     camera.rotateLeft(button.delta.x * 50);
-    //     camera.rotateUp(-button.delta.y * 50);
-    // };
+    ctx.mouse_dragged = [&camera](const p6::MouseDrag& button) {
+        camera.rotateLeft(button.delta.x * 50);
+        camera.rotateUp(-button.delta.y * 50);
+    };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
