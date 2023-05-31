@@ -62,57 +62,8 @@ int main(int argc, char* argv[])
     Model broom_arpenteur("../../assets/models/broom_smoothed_triangle.obj", "../../assets/models/");
     broom_arpenteur.create_vbo();
 
-    //  VBO
-    GLuint vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // std::vector<glimac::ShapeVertex> my_cone;
-    // cone
-    std::vector<glimac::ShapeVertex> my_cone =
-        glimac::cone_vertices(1.f, 0.5f, 32, 16);
-
-    // Remplir VBO
-    glBufferData(GL_ARRAY_BUFFER, my_cone.size() * sizeof(glimac::ShapeVertex), my_cone.data(), GL_STATIC_DRAW);
-
-    // VAO
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // activate vertex attributes
-    const GLuint VERTEX_ATTR_POSITION = 0;
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-
-    const GLuint VERTEX_ATTR_NORMAL = 1;
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-
-    const GLuint VERTEX_ATTR_UV = 2;
-    glEnableVertexAttribArray(VERTEX_ATTR_UV);
-
-    const GLuint VERTEX_ATTR_COLOR = 3;
-    glEnableVertexAttribArray(VERTEX_ATTR_COLOR);
-
-    // specification vertex attributes
-    glVertexAttribPointer(
-        VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
-        (const GLvoid*)(offsetof(glimac::ShapeVertex, position))
-    );
-    glVertexAttribPointer(
-        VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
-        (const GLvoid*)(offsetof(glimac::ShapeVertex, normal))
-    );
-    glVertexAttribPointer(
-        VERTEX_ATTR_UV, 2, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
-        (const GLvoid*)(offsetof(glimac::ShapeVertex, texCoords))
-    );
-    glVertexAttribPointer(
-        VERTEX_ATTR_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof(glimac::ShapeVertex),
-        (const GLvoid*)(offsetof(glimac::ShapeVertex, color))
-    );
-    // Debinding VBO
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // Debinding VAO
-    glBindVertexArray(0);
+    Model key("../../assets/models/key.obj", "../../assets/models/");
+    key.create_vbo();
 
     // our boids
 
@@ -214,15 +165,14 @@ int main(int argc, char* argv[])
 
         // arpenteur.drawArpenteur(Shader, ViewMatrix, ProjMatrix, my_cone);
         broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
-        glBindVertexArray(vao);
+
         for (auto& boid : flock)
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
 
-            boid.draw(Shader, ViewMatrix, ProjMatrix, my_cone);
+            key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * boid.getSize(), boid.getDirection(), boid.getPosition());
         }
-        glBindVertexArray(0);
-        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 3.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.0));
+        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 2.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.0));
     };
 
     ctx.key_pressed = [&Z, &Q, &S, &D, &R, &shift](const p6::Key& key) {
@@ -288,9 +238,6 @@ int main(int argc, char* argv[])
 
     // Clear vbo & vao & texture
     // glDeleteTextures(1, &my_texture);
-
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
 
     return 0;
 }

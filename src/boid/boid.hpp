@@ -33,5 +33,8 @@ public:
     glm::vec3 alignment(std::vector<Boid>& flock, float perception_radius);
     void      collision();
     void      change_turning_rate();
+    glm::vec3 getPosition() const { return m_position; };
+    glm::vec3 getDirection() const { return m_direction; };
+    float     getSize() const { return m_radius; };
 };
 void computeDirectionVectors(glm::vec3& frontAxis, glm::vec3& leftAxis, glm::vec3& upAxis, const glm::vec3& direction);
