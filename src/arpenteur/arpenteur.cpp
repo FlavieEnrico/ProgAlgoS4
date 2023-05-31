@@ -15,6 +15,7 @@ void Arpenteur::moveForward()
     }
     m_position.x += m_speed * m_direction.x;
     m_position.z += m_speed * m_direction.z;
+    collision();
 }
 
 void Arpenteur::moveBackward()
@@ -30,6 +31,7 @@ void Arpenteur::moveBackward()
 
     m_position.x -= m_speed * m_direction.x;
     m_position.z -= m_speed * m_direction.z;
+    collision();
 }
 
 void Arpenteur::moveUp()
@@ -43,6 +45,7 @@ void Arpenteur::moveUp()
         m_verticalSpeed = max_speed;
     }
     m_position.y += m_verticalSpeed;
+    collision();
 }
 
 void Arpenteur::moveDown()
@@ -56,6 +59,7 @@ void Arpenteur::moveDown()
         m_verticalSpeed = min_speed;
     }
     m_position.y -= m_verticalSpeed;
+    collision();
 }
 
 void Arpenteur::rotateLeft()
@@ -72,4 +76,35 @@ void Arpenteur::setDirection()
 {
     m_direction.x = glm::cos(m_rotate);
     m_direction.z = glm::sin(m_rotate);
+}
+
+void Arpenteur::collision()
+{
+    float distance_arp_camera = 0.2f;
+    float wall_position       = 2.f;
+
+    if (this->m_position.x >= wall_position)
+    {
+        this->m_position.x = wall_position;
+    }
+    if (this->m_position.x <= -wall_position)
+    {
+        this->m_position.x = -wall_position;
+    }
+    if (this->m_position.y >= wall_position)
+    {
+        this->m_position.y = wall_position;
+    }
+    if (this->m_position.y <= -wall_position)
+    {
+        this->m_position.y = -wall_position;
+    }
+    if (this->m_position.z >= wall_position)
+    {
+        this->m_position.z = wall_position;
+    }
+    if (this->m_position.z <= -wall_position)
+    {
+        this->m_position.z = -wall_position;
+    }
 }

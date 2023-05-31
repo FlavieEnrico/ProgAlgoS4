@@ -34,6 +34,8 @@ public:
     void rotateRight();
     void rotateLeft();
 
+    void collision();
+
     void setDirection();
 
     // getter
