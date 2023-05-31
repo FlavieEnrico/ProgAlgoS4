@@ -155,6 +155,9 @@ int main(int argc, char* argv[])
         // Shader.set("uLightPos_vs[0]", pointLight1.getPosition());
         Shader.set("uLightPos_vs[1]", pointLight2.getPosition());
         //  Shader.set("uLightPos_vs", glm::vec3(0.5f, 0.5f, 0.f));
+        Shader.set("uAmbientLightColor", glm::vec3(1.f, 1.f, 1.f));
+        Shader.set("uAmbientLightIntensity", 0.1f);
+
         arpenteur.setDirection();
 
         camera.setPos(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y + 0.2, arpenteur.getPosition().z + 0.2});

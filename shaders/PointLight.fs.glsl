@@ -15,6 +15,9 @@ uniform vec3 uLightPos_vs[LIGHTS_NB];
 uniform float uLightIntensity[LIGHTS_NB]; 
 uniform vec3 uLightColor[LIGHTS_NB]; 
 
+uniform vec3 uAmbientLightColor; 
+uniform float uAmbientLightIntensity;
+
 out vec4 fFragColor;
 
 vec3 blinnPhong(int IndexLight){
@@ -33,7 +36,7 @@ vec3 blinnPhong(int IndexLight){
     return uka + L * (uLightColor[IndexLight] * uKd * dotW + uKs * specular);
 }
 void main() {
-    vec3 ambient = vec3(0.0);
+    vec3 ambient = uAmbientLightColor * uAmbientLightIntensity;
     vec3 lightTotal = vec3(0.0);
     for(int i = 0; i < LIGHTS_NB; i++){
         lightTotal += blinnPhong(i);
