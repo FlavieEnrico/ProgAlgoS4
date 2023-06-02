@@ -22,6 +22,8 @@
 #include "boid/boid.hpp"
 #include "doctest/doctest.h"
 
+void draw_lod(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, FreeflyCamera camera, Boid my_boid, Model key, Model my_cube);
+
 int main(int argc, char* argv[])
 {
     { // Run the tests
@@ -177,7 +179,8 @@ int main(int argc, char* argv[])
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
 
-            key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * boid.getSize(), boid.getDirection(), boid.getPosition());
+            // key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * boid.getSize(), boid.getDirection(), boid.getPosition());
+            draw_lod(Shader, ViewMatrix, ProjMatrix, camera, boid, key, my_cube);
         }
         my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 2.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.f));
     };
@@ -247,4 +250,16 @@ int main(int argc, char* argv[])
     // Clear vbo & vao & texture
 
     return 0;
+}
+
+void draw_lod(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& ProjMatrix, FreeflyCamera camera, Boid my_boid, Model key, Model my_cube)
+{
+    if (glm::distance(my_boid.getPosition(), camera.getPos()) < 2)
+    {
+        key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * my_boid.getSize(), my_boid.getDirection(), my_boid.getPosition());
+    }
+    else
+    {
+        my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * my_boid.getSize(), my_boid.getDirection(), my_boid.getPosition());
+    }
 }

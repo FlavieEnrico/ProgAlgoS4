@@ -18,14 +18,15 @@ public:
     FreeflyCamera(const FreeflyCamera& camera);
 
 public:
-    void computeDirectionVectors(); // calculate F L U
-    void moveLeft(float t);         // L
-    void moveFront(float t);        // F
-    void rotateLeft(float degrees); // Phi
-    void rotateUp(float degrees);   // Theta
-    void setPos(glm::vec3 position);
-    void setPhi(float degrees);
-    void setTheta(float degrees);
+    void      computeDirectionVectors(); // calculate F L U
+    void      moveLeft(float t);         // L
+    void      moveFront(float t);        // F
+    void      rotateLeft(float degrees); // Phi
+    void      rotateUp(float degrees);   // Theta
+    void      setPos(glm::vec3 position);
+    glm::vec3 getPos() { return this->m_Position; };
+    void      setPhi(float degrees);
+    void      setTheta(float degrees);
 
 public:
     glm::mat4 getViewMatrix() const; // glm::lookAt(eye, point, up)

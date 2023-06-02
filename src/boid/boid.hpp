@@ -11,6 +11,7 @@
 #include "glm/geometric.hpp"
 #include "glm/glm.hpp"
 #include "glm/matrix.hpp"
+#include "loader/model.hpp"
 #include "p6/p6.h"
 
 class Boid {
