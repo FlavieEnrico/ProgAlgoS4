@@ -1,6 +1,4 @@
 #pragma once
-#include <cstdlib>
-#include <vector>
 #include "../src-common/glimac/common.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
@@ -11,7 +9,6 @@
 class Arpenteur {
 private:
     glm::vec3 m_position;
-    // glm::vec3 m_firstDirection;
     glm::vec3 m_direction;
     float     m_speed;
     float     m_acceleration = 0.001;
@@ -26,7 +23,7 @@ public:
     Arpenteur(glm::vec3 position = glm::vec3{0.f}, glm::vec3 direction = glm::vec3{1.f, 0.f, 0.f}, float speed = 0.001f)
         : m_position(position), m_direction(direction), m_speed(speed){};
 
-    // déplacement arpenteur
+    // move arpenteur
     void moveForward();
     void moveBackward();
     void moveDown();

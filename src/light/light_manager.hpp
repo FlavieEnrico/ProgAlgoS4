@@ -1,12 +1,7 @@
 #pragma once
-#include <stdlib.h>
-#include <vector>
-#include "../src-common/glimac/common.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "imgui.h"
-#include "p6/p6.h"
 
 class Light {
 private:

@@ -1,7 +1,5 @@
 #include "model.hpp"
 #include "boid/boid.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
 #include "loader/model.hpp"
 #include "loader/tiny_obj_loader.h"
 

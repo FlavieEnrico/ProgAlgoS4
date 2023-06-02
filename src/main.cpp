@@ -1,12 +1,7 @@
-#include <stdlib.h>
+
 #include <glm/glm.hpp>
-#include <iostream>
-#include <string>
-#include <vector>
 #include "../src-common/glimac/FreeflyCamera.hpp"
-#include "../src-common/glimac/TrackballCamera.hpp"
 #include "../src-common/glimac/common.hpp"
-#include "../src-common/glimac/cone_vertices.hpp"
 #include "glm/fwd.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
@@ -26,16 +21,6 @@ void draw_lod(p6::Shader& Shader, const glm::mat4& ViewMatrix, const glm::mat4& 
 
 int main(int argc, char* argv[])
 {
-    { // Run the tests
-        if (doctest::Context{}.run() != 0)
-            return EXIT_FAILURE;
-        // The CI does not have a GPU so it cannot run the rest of the code.
-        const bool no_gpu_available =
-            argc >= 2 && strcmp(argv[1], "-nogpu") == 0; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        if (no_gpu_available)
-            return EXIT_SUCCESS;
-    }
-
     auto ctx = p6::Context{{.title = "ProgAlgoS4"}};
     ctx.maximize_window();
 
@@ -43,10 +28,11 @@ int main(int argc, char* argv[])
     int        height = ctx.current_canvas_height();
     p6::Shader Shader = p6::load_shader("shaders/3D.vs.glsl", "shaders/PointLight.fs.glsl");
 
-    // initialize Matrix
+    // Arpenteur and camera
     Arpenteur     arpenteur;
     FreeflyCamera camera = FreeflyCamera(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y, arpenteur.getPosition().z});
 
+    // initialize projMatrix
     glm::mat4 ProjMatrix = glm::perspective(glm::radians(70.f), ((float)width / (float)height), 0.1f, 100.f);
 
     // Load all the 3D Models
@@ -146,20 +132,18 @@ int main(int argc, char* argv[])
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Shader.use();
+
+        // set lights
         Shader.set("uKa", glm::vec3(0.2f, 1.f, 0.8f));
         Shader.set("uKd", glm::vec3(0.8f, 0.8f, 0.8f));
         Shader.set("uKs", glm::vec3(1.0f, 0.8f, 1.0f));
         Shader.set("uShininess", 100.0f);
-
-        // Shader.set("uLightIntensity[0]", pointLight1.getIntensity());
         Shader.set("uLightIntensity[1]", pointLight2.getIntensity());
         Shader.set("uLightIntensity[0]", pointLight1.getIntensity());
         Shader.set("uLightColor[1]", pointLight2.getColor());
         Shader.set("uLightColor[0]", pointLight1.getColor());
         Shader.set("uLightPos_vs[0]", pointLight1.getPosition());
-        // Shader.set("uLightPos_vs[0]", pointLight1.getPosition());
         Shader.set("uLightPos_vs[1]", pointLight2.getPosition());
-        //  Shader.set("uLightPos_vs", glm::vec3(0.5f, 0.5f, 0.f));
         Shader.set("uAmbientLightColor", glm::vec3(1.f, 1.f, 1.f));
         Shader.set("uAmbientLightIntensity", 0.1f);
 
@@ -167,9 +151,7 @@ int main(int argc, char* argv[])
 
         camera.setPos(glm::vec3{arpenteur.getPosition().x, arpenteur.getPosition().y + 0.2, arpenteur.getPosition().z + 0.2});
 
-        // camera.setCoordinates(arpenteur);
         glm::mat4 ViewMatrix = camera.getViewMatrix();
-        // glm::mat4 ViewMatrix =lookAt(camera.getPos(), arpenteur.getPosition(), {0.f, 0.5f, 0.f});
 
         broom_arpenteur.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f, -(arpenteur.getDirection()), arpenteur.getPosition());
 
@@ -179,7 +161,6 @@ int main(int argc, char* argv[])
         {
             boid.update_position(flock, separation_force, alignment_force, cohesion_force);
 
-            // key.draw_model(Shader, ViewMatrix, ProjMatrix, 0.1f * boid.getSize(), boid.getDirection(), boid.getPosition());
             draw_lod(Shader, ViewMatrix, ProjMatrix, camera, boid, key, my_cube);
         }
         my_cube.draw_model(Shader, ViewMatrix, ProjMatrix, 2.f, glm::vec3(1.0, 0.f, 0.f), glm::vec3(0.f));
@@ -244,10 +225,7 @@ int main(int argc, char* argv[])
         camera.rotateUp(-button.delta.y * 50);
     };
 
-    // Should be done last. It starts the infinite loop.
     ctx.start();
-
-    // Clear vbo & vao & texture
 
     return 0;
 }
